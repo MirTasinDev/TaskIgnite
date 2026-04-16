@@ -40,6 +40,9 @@ npm run build
 ```
 The installer will be generated in `dist/`.
 
+## App icon
+The Windows icon is located at `assets/icon.ico` and is used automatically during packaging.
+
 ## Startup behavior
 - After installation, TaskIgnite is configured to **start with Windows**.
 - This is enabled only in the packaged app (not during `npm start`).

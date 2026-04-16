@@ -10,7 +10,8 @@
   },
   "devDependencies": {
     "electron": "^29.0.0",
-    "electron-builder": "^24.9.1"
+    "electron-builder": "^24.9.1",
+    "png-to-ico": "^3.0.1"
   },
   "build": {
     "appId": "com.taskmanager.tms",
@@ -18,7 +19,14 @@
     "publish": "github",
     "copyright": "Copyright © 2026",
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "assets/icon.ico"
     },
     "nsis": {
@@ -28,6 +36,11 @@
       "createStartMenuShortcut": true,
       "runAfterFinish": true
     },
-    "files": ["main.js", "preload.js", "renderer/**/*", "assets/**/*"]
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ]
   }
 }
