@@ -3,6 +3,16 @@ const path = require('path');
 
 let mainWindow;
 
+function enableAutoStart() {
+  if (!app.isPackaged) return;
+  try {
+    app.setLoginItemSettings({
+      openAtLogin: true,
+      openAsHidden: false
+    });
+  } catch {}
+}
+
 function createHiddenPrintWindow(html) {
   const printWindow = new BrowserWindow({
     show: false,
@@ -56,7 +66,10 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  enableAutoStart();
+  createWindow();
+});
 
 // lifecycle
 app.on('window-all-closed', () => {

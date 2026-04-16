@@ -1,6 +1,6 @@
 {
   "name": "taskignite",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TaskIgnite — Windows Desktop App",
   "main": "main.js",
   "scripts": {
@@ -15,6 +15,7 @@
   "build": {
     "appId": "com.taskmanager.tms",
     "productName": "TaskIgnite",
+    "publish": "github",
     "copyright": "Copyright © 2026",
     "win": {
       "target": [{ "target": "nsis", "arch": ["x64"] }],
@@ -23,7 +24,9 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true
     },
     "files": ["main.js", "preload.js", "renderer/**/*", "assets/**/*"]
   }

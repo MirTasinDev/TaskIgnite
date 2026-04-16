@@ -40,6 +40,10 @@ npm run build
 ```
 The installer will be generated in `dist/`.
 
+## Startup behavior
+- After installation, TaskIgnite is configured to **start with Windows**.
+- This is enabled only in the packaged app (not during `npm start`).
+
 ## How to use
 1) Launch the app and enter your name (first run only).
 2) Add tasks in the Tasks tab.
