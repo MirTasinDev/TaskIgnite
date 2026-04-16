@@ -1,0 +1,3430 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskIgnite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Work+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+/* ═══════════════════════════════════════════════════════════════
+   CSS CUSTOM PROPERTIES — THEME TOKENS
+═══════════════════════════════════════════════════════════════ */
+:root {
+  /* Dark theme (default) */
+  --bg:          #0B1414;
+  --surface:     #0F1C1D;
+  --card:        #142326;
+  --card-hover:  #1A2E32;
+  --border:      #24373C;
+  --border-lit:  #325057;
+  --accent:      #2FB9A7;
+  --accent-glow: rgba(47,185,167,0.25);
+  --accent-dim:  #1D8E81;
+  --accent-soft: rgba(47,185,167,0.12);
+  --violet:      #5FD9C7;
+  --text:        #E7F5F3;
+  --text-2:      #A7C7C3;
+  --text-3:      #6F908B;
+  --red:         #EF6B6B;
+  --red-bg:      rgba(239,107,107,0.14);
+  --green:       #36D399;
+  --green-bg:    rgba(54,211,153,0.12);
+  --amber:       #F4B860;
+  --amber-bg:    rgba(244,184,96,0.14);
+  --blue:        #4CB6E7;
+  --blue-bg:     rgba(76,182,231,0.12);
+  --scrollbar:   #24373C;
+  --shadow:      rgba(0,0,0,0.55);
+  --hero-start:  #0F6B64;
+  --hero-end:    #123A3A;
+
+  /* Sizing */
+  --titlebar-h:  38px;
+  --nav-w:       200px;
+  --radius:      10px;
+  --radius-sm:   6px;
+  --radius-lg:   16px;
+
+  /* Fonts */
+  --font-ui:     'Work Sans', sans-serif;
+  --font-head:   'Sora', sans-serif;
+  --font-mono:   'IBM Plex Mono', monospace;
+}
+
+[data-theme="light"] {
+  --bg:          #F7F4EF;
+  --surface:     #FFFDF9;
+  --card:        #FFFFFF;
+  --card-hover:  #F7F2EA;
+  --border:      #E5DDD1;
+  --border-lit:  #D7C6B2;
+  --accent:      #0FA89C;
+  --accent-glow: rgba(15,168,156,0.2);
+  --accent-dim:  #0A7B72;
+  --accent-soft: rgba(15,168,156,0.1);
+  --violet:      #1BAF9E;
+  --text:        #1F2A2A;
+  --text-2:      #4F6765;
+  --text-3:      #8A9E9B;
+  --red:         #C84F4F;
+  --red-bg:      rgba(200,79,79,0.1);
+  --green:       #128E6A;
+  --green-bg:    rgba(18,142,106,0.1);
+  --amber:       #B7791F;
+  --amber-bg:    rgba(183,121,31,0.1);
+  --blue:        #2B8CCB;
+  --blue-bg:     rgba(43,140,203,0.1);
+  --scrollbar:   #E5DDD1;
+  --shadow:      rgba(43,29,20,0.16);
+  --hero-start:  #28A69A;
+  --hero-end:    #3B5B59;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-lit); }
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT SHELL
+═══════════════════════════════════════════════════════════════ */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 60% 40% at 70% 0%, rgba(47,185,167,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 10% 100%, rgba(244,184,96,0.06) 0%, transparent 60%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CUSTOM TITLE BAR
+═══════════════════════════════════════════════════════════════ */
+#titlebar {
+  height: var(--titlebar-h);
+  min-height: var(--titlebar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  -webkit-app-region: drag;
+  z-index: 1000;
+  flex-shrink: 0;
+}
+
+#titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  -webkit-app-region: drag;
+}
+
+#app-logo {
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+#app-logo svg { width: 12px; height: 12px; }
+
+#titlebar-title {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+  text-transform: uppercase;
+}
+
+#titlebar-controls {
+  display: flex;
+  align-items: stretch;
+  height: var(--titlebar-h);
+  -webkit-app-region: no-drag;
+}
+
+.wc-btn {
+  width: 46px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.wc-btn:hover { background: var(--card); color: var(--text); }
+#wc-close:hover { background: #c0392b; color: #fff; }
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN BODY (sidebar + content)
+═══════════════════════════════════════════════════════════════ */
+#body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR NAVIGATION
+═══════════════════════════════════════════════════════════════ */
+#sidebar {
+  width: var(--nav-w);
+  min-width: var(--nav-w);
+  background: linear-gradient(180deg, #0E1C1E 0%, #0F1C1D 100%);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0 16px;
+  overflow: hidden;
+}
+
+#sidebar-brand {
+  padding: 0 16px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+#brand-label {
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+#sidebar-nav {
+  flex: 1;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.nav-item:hover {
+  background: rgba(47,185,167,0.12);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.nav-item.active {
+  background: rgba(47,185,167,0.16);
+  color: var(--accent);
+  border-color: var(--border-lit);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+  left: -8px;
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.nav-item.active .nav-icon { opacity: 1; }
+
+#sidebar-bottom {
+  padding: 12px 8px 0;
+  border-top: 1px solid var(--border);
+}
+
+#theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: var(--card);
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+#theme-toggle-btn:hover { background: var(--card-hover); color: var(--text); }
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTENT AREA
+═══════════════════════════════════════════════════════════════ */
+#content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.tab-panel {
+  display: none;
+  height: 100%;
+  overflow-y: auto;
+  padding: 28px 32px;
+  animation: fadeIn 0.2s ease;
+}
+
+.tab-panel.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PAGE HEADER
+═══════════════════════════════════════════════════════════════ */
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.page-sub {
+  font-size: 13px;
+  color: var(--text-3);
+  margin-top: 4px;
+}
+
+.greeting-line {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.name-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(8,12,14,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(6px);
+}
+
+.name-modal.active { display: flex; }
+
+.name-modal-card {
+  width: min(420px, 92vw);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  padding: 20px;
+}
+
+.name-modal-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.name-modal-sub {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-bottom: 14px;
+}
+
+.name-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════════════════════ */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 10px 28px var(--shadow);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.card:hover { border-color: var(--border-lit); box-shadow: 0 16px 36px var(--shadow); transform: translateY(-1px); }
+
+.card-title {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 14px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GRID HELPERS
+═══════════════════════════════════════════════════════════════ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.col-span-2 { grid-column: span 2; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ DASHBOARD — CLOCK
+═══════════════════════════════════════════════════════════════ */
+#clock-card {
+  background: linear-gradient(135deg, var(--hero-start) 0%, var(--hero-end) 100%);
+  border-color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+#clock-display {
+  font-family: var(--font-mono);
+  font-size: 44px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(47,185,167,0.4);
+}
+
+#clock-date {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(214,247,242,0.85);
+  margin-top: 6px;
+  letter-spacing: 0.04em;
+}
+
+#clock-right {
+  text-align: right;
+}
+
+#clock-day {
+  font-family: var(--font-head);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(214,247,242,0.55);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ METRIC CARDS
+═══════════════════════════════════════════════════════════════ */
+.metric-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::after {
+  content: '';
+  position: absolute;
+  top: -20px; right: -20px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: 0.07;
+}
+
+.metric-card.total::after   { background: var(--accent); }
+.metric-card.done::after    { background: var(--green); }
+.metric-card.progress::after { background: var(--blue); }
+.metric-card.overdue::after { background: var(--red); }
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.metric-card.total    .metric-value { color: var(--violet); }
+.metric-card.done     .metric-value { color: var(--green); }
+.metric-card.progress .metric-value { color: var(--blue); }
+.metric-card.overdue  .metric-value { color: var(--red); }
+
+.metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+}
+
+.metric-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ YEAR PROGRESS
+═══════════════════════════════════════════════════════════════ */
+#year-progress-bar-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 12px 0 10px;
+}
+
+#year-progress-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  background: linear-gradient(90deg, #2FB9A7, #F4B860);
+}
+
+#year-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+#year-pct {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ DOT CALENDAR
+═══════════════════════════════════════════════════════════════ */
+#dot-calendar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  cursor: default;
+  transition: transform 0.1s, box-shadow 0.1s;
+  flex-shrink: 0;
+}
+
+.dot:hover { transform: scale(1.5); }
+.dot.past  { background: var(--red); opacity: 0.55; }
+.dot.today {
+  background: var(--amber);
+  box-shadow: 0 0 6px var(--amber);
+  animation: pulse 2s infinite;
+}
+.dot.future { background: var(--green); opacity: 0.45; }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 4px var(--amber); }
+  50%       { box-shadow: 0 0 10px var(--amber); }
+}
+
+.dot-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.dot-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dot-legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WORKLOAD CHART
+═══════════════════════════════════════════════════════════════ */
+.workload-card {
+  position: relative;
+}
+
+.workload-canvas {
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(47,185,167,0.08), transparent 70%);
+  border: 1px solid var(--border);
+}
+
+.workload-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.workload-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.workload-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.workload-dot.low { background: var(--text-3); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ ACTIVITY FEED
+═══════════════════════════════════════════════════════════════ */
+#activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.activity-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.activity-dot.added   { background: var(--green); }
+.activity-dot.deleted { background: var(--red); }
+
+.activity-text { font-size: 12px; color: var(--text-2); flex: 1; }
+.activity-text strong { color: var(--text); font-weight: 500; }
+.activity-time { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); white-space: nowrap; }
+
+.feed-empty { font-size: 12px; color: var(--text-3); text-align: center; padding: 20px 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ★ TASKS TAB
+═══════════════════════════════════════════════════════════════ */
+.add-task-form {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.2fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.form-input,
+.form-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  padding: 8px 11px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.form-input::placeholder { color: var(--text-3); }
+
+.form-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent-dim); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--text-2);
+  border-color: var(--border);
+}
+.btn-secondary:hover { background: var(--card-hover); color: var(--text); border-color: var(--border-lit); }
+
+.btn-danger {
+  background: transparent;
+  color: var(--red);
+  border-color: transparent;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+.btn-danger:hover { background: var(--red-bg); border-color: var(--red); }
+
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+.briefing-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TASK TABLE
+═══════════════════════════════════════════════════════════════ */
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+}
+
+.task-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.task-table td {
+  padding: 11px 12px;
+  font-size: 13px;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.task-table tr:last-child td { border-bottom: none; }
+
+.task-table tr:hover td {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.task-name {
+  color: var(--text);
+  font-weight: 500;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD TASK LISTS
+═══════════════════════════════════════════════════════════════ */
+.dash-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dash-task-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dash-task-row:hover {
+  border-color: var(--border-lit);
+  background: var(--card);
+}
+
+.dash-task-row.is-complete .dash-task-title {
+  text-decoration: line-through;
+  color: var(--text-3);
+}
+
+.dash-check {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.dash-check input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dash-check-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--border-lit);
+  background: var(--card);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.dash-check input:focus + .dash-check-box {
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.dash-check input:checked + .dash-check-box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.dash-check input:checked + .dash-check-box::after {
+  content: '';
+  width: 7px;
+  height: 4px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg);
+  margin-top: -1px;
+}
+
+.dash-task-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-task-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dash-task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.dash-task-meta .badge {
+  font-size: 10px;
+  padding: 2px 7px;
+}
+
+.dash-task-del {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dash-task-del:hover {
+  background: var(--red-bg);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.dash-empty {
+  font-size: 12px;
+  color: var(--text-3);
+  padding: 8px 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BADGES
+═══════════════════════════════════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.badge-pending    { background: var(--border);   color: var(--text-2); }
+.badge-progress   { background: var(--blue-bg);  color: var(--blue); }
+.badge-completed  { background: var(--green-bg); color: var(--green); }
+.badge-overdue    { background: var(--red-bg);   color: var(--red); }
+.badge-low        { background: var(--green-bg); color: var(--green); }
+.badge-medium     { background: var(--amber-bg); color: var(--amber); }
+.badge-high       { background: var(--red-bg);   color: var(--red); }
+
+/* ═══════════════════════════════════════════════════════════════
+   BRIEFING CARDS
+═══════════════════════════════════════════════════════════════ */
+.briefing-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.briefing-item:hover { border-color: var(--border-lit); }
+
+.briefing-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.briefing-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.briefing-scope {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--text-2);
+  background: var(--surface);
+}
+
+.briefing-scope.remaining {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.briefing-scope.completed {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-bg);
+}
+
+.briefing-icon {
+  font-size: 16px;
+}
+
+.briefing-time {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.briefing-body {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.briefing-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.briefing-stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--text-2);
+}
+
+.briefing-stat strong {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.briefing-task-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.briefing-task {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.briefing-task-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.briefing-task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.briefing-empty {
+  font-size: 12px;
+  color: var(--text-3);
+  padding: 4px 2px;
+}
+
+.briefing-detail-view {
+  display: none;
+}
+
+.briefing-detail-view.active {
+  display: block;
+}
+
+.briefing-detail-header {
+  margin-bottom: 12px;
+}
+
+.briefing-changes {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.briefing-change {
+  font-size: 12px;
+  color: var(--text-2);
+  padding: 3px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.briefing-change::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.briefing-change.added::before   { background: var(--green); }
+.briefing-change.deleted::before { background: var(--red); }
+
+/* ═══════════════════════════════════════════════════════════════
+   REPORTS
+═══════════════════════════════════════════════════════════════ */
+.report-btn-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.report-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.report-period {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.report-type-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.report-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.report-stat {
+  padding: 14px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+
+.report-stat:last-child { border-right: none; }
+
+.report-stat-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.report-stat-label {
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+.report-summary {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+  border-top: 1px solid var(--border);
+}
+
+.report-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.report-actions .btn {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+@media print {
+  body { background: #fff; }
+  #titlebar, #sidebar, .nav-item, #theme-toggle-btn { display: none !important; }
+  #content { padding: 0; }
+  .tab-panel { padding: 0; }
+  .report-actions { display: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WIZARD
+═══════════════════════════════════════════════════════════════ */
+.wizard-section {
+  max-width: 540px;
+}
+
+.time-slider-card {
+  margin-bottom: 20px;
+}
+
+.slider-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.slider-title {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slider-preview {
+  text-align: right;
+}
+
+.slider-time-12 {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.slider-time-24 {
+  font-size: 11px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 6px var(--accent-glow);
+}
+
+.slider-range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  margin-top: 6px;
+}
+
+.wizard-save-row {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wizard-saved-msg {
+  font-size: 12px;
+  color: var(--green);
+  display: none;
+}
+
+.wizard-saved-msg.show { display: flex; align-items: center; gap: 5px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════════════════════════════ */
+.settings-section {
+  max-width: 560px;
+  margin-bottom: 28px;
+}
+
+.settings-title {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.04em;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+.setting-info { }
+.setting-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.setting-desc {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* Toggle switch */
+.toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.toggle input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  left: 3px; top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle input:checked + .toggle-slider { background: var(--accent); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+/* Language selector */
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.lang-btn {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.lang-flag { font-size: 20px; }
+.lang-btn:hover { background: var(--card-hover); border-color: var(--border-lit); color: var(--text); }
+.lang-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+/* ═══════════════════════════════════════════════════════════════
+   EMPTY STATES
+═══════════════════════════════════════════════════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-3);
+}
+
+.empty-state-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.4; }
+.empty-state-title { font-size: 14px; font-weight: 600; color: var(--text-2); margin-bottom: 4px; }
+.empty-state-sub { font-size: 12px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   DIVIDER & UTILITIES
+═══════════════════════════════════════════════════════════════ */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+.section-gap { margin-bottom: 16px; }
+.mb-4 { margin-bottom: 4px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mt-16 { margin-top: 16px; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.gap-8 { gap: 8px; }
+.flex-1 { flex: 1; }
+.justify-between { justify-content: space-between; }
+
+/* ═══════════════════════════════════════════════════════════════
+   RTL SUPPORT (Arabic)
+═══════════════════════════════════════════════════════════════ */
+[dir="rtl"] #sidebar { border-right: none; border-left: 1px solid var(--border); }
+[dir="rtl"] .nav-item.active::before { left: auto; right: -8px; border-radius: 2px 0 0 2px; }
+[dir="rtl"] .add-task-form { direction: rtl; }
+[dir="rtl"] .task-table { direction: rtl; }
+[dir="rtl"] .task-table th,
+[dir="rtl"] .task-table td { text-align: right; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLLBAR IN CONTENT
+═══════════════════════════════════════════════════════════════ */
+.tab-panel::-webkit-scrollbar { width: 5px; }
+  </style>
+</head>
+<body>
+  <div id="name-modal" class="name-modal">
+    <div class="name-modal-card">
+      <div class="name-modal-title" data-i18n="name.title">Welcome</div>
+      <div class="name-modal-sub" data-i18n="name.sub">Tell us your name to personalize your dashboard.</div>
+      <input id="name-input" class="form-input" type="text" data-i18n-placeholder="name.placeholder" placeholder="Your name" />
+      <div class="name-modal-actions">
+        <button class="btn btn-primary" id="name-save-btn">
+          <span data-i18n="name.save">Save</span>
+        </button>
+      </div>
+    </div>
+  </div>
+<div id="app">
+
+  <!-- ══════════════ TITLE BAR ══════════════ -->
+  <div id="titlebar">
+    <div id="titlebar-left">
+      <div id="app-logo">
+        <svg viewBox="0 0 12 12" fill="none">
+          <rect x="1" y="1" width="4" height="4" rx="1" fill="white"/>
+          <rect x="7" y="1" width="4" height="4" rx="1" fill="white" opacity="0.5"/>
+          <rect x="1" y="7" width="4" height="4" rx="1" fill="white" opacity="0.5"/>
+          <rect x="7" y="7" width="4" height="4" rx="1" fill="white"/>
+        </svg>
+      </div>
+      <span id="titlebar-title">TaskIgnite</span>
+    </div>
+    <div id="titlebar-controls">
+      <button class="wc-btn" id="wc-minimize" title="Minimize">
+        <svg width="10" height="1" viewBox="0 0 10 1"><rect width="10" height="1.5" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="wc-btn" id="wc-maximize" title="Maximize">
+        <svg width="10" height="10" viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      </button>
+      <button class="wc-btn" id="wc-close" title="Close">
+        <svg width="10" height="10" viewBox="0 0 10 10">
+          <line x1="1" y1="1" x2="9" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="9" y1="1" x2="1" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════ BODY ══════════════ -->
+  <div id="body">
+
+    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <aside id="sidebar">
+      <div id="sidebar-brand">
+        <div id="brand-label" data-i18n="appName">TaskIgnite</div>
+      </div>
+
+      <nav id="sidebar-nav">
+        <button class="nav-item active" data-tab="dashboard">
+          <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="1" width="6" height="6" rx="1.5"/>
+            <rect x="11" y="1" width="6" height="6" rx="1.5"/>
+            <rect x="1" y="11" width="6" height="6" rx="1.5"/>
+            <rect x="11" y="11" width="6" height="6" rx="1.5"/>
+          </svg>
+          <span data-i18n="nav.dashboard">Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="tasks">
+          <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="1" width="16" height="16" rx="2"/>
+            <line x1="5" y1="6" x2="13" y2="6"/>
+            <line x1="5" y1="9" x2="13" y2="9"/>
+            <line x1="5" y1="12" x2="9" y2="12"/>
+          </svg>
+          <span data-i18n="nav.tasks">Tasks</span>
+        </button>
+        <button class="nav-item" data-tab="briefings">
+          <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 3h14v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3z"/>
+            <line x1="5" y1="7" x2="13" y2="7"/>
+            <line x1="5" y1="10" x2="9" y2="10"/>
+            <path d="M6 15l3 2 3-2"/>
+          </svg>
+          <span data-i18n="nav.briefings">Briefings</span>
+        </button>
+        <button class="nav-item" data-tab="reports">
+          <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="1" width="14" height="16" rx="2"/>
+            <line x1="5" y1="6" x2="13" y2="6"/>
+            <line x1="5" y1="9" x2="13" y2="9"/>
+            <line x1="5" y1="12" x2="9" y2="12"/>
+            <path d="M9 14l2-2 2 2"/>
+          </svg>
+          <span data-i18n="nav.reports">Reports</span>
+        </button>
+        <button class="nav-item" data-tab="wizard">
+          <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="9" cy="9" r="7"/>
+            <line x1="9" y1="4" x2="9" y2="9"/>
+            <line x1="9" y1="9" x2="12" y2="11"/>
+            <circle cx="9" cy="9" r="1" fill="currentColor"/>
+          </svg>
+          <span data-i18n="nav.wizard">Wizard</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="9" cy="9" r="2.5"/>
+            <path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.1 3.1l1.4 1.4M13.5 13.5l1.4 1.4M3.1 14.9l1.4-1.4M13.5 4.5l1.4-1.4"/>
+          </svg>
+          <span data-i18n="nav.settings">Settings</span>
+        </button>
+      </nav>
+
+      <div id="sidebar-bottom">
+        <button id="theme-toggle-btn">
+          <svg class="nav-icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="9" cy="9" r="4"/>
+            <line x1="9" y1="1" x2="9" y2="3"/>
+            <line x1="9" y1="15" x2="9" y2="17"/>
+            <line x1="1" y1="9" x2="3" y2="9"/>
+            <line x1="15" y1="9" x2="17" y2="9"/>
+          </svg>
+          <span id="theme-label" data-i18n="settings.toggleTheme">Toggle Theme</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ══════════════ CONTENT ══════════════ -->
+    <main id="content">
+
+      <!-- ════════ DASHBOARD ════════ -->
+      <div id="tab-dashboard" class="tab-panel active">
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="nav.dashboard">Dashboard</h1>
+          <p class="page-sub" data-i18n="dashboard.sub">Live overview of your tasks and year progress</p>
+          <div id="greeting-line" class="greeting-line"></div>
+        </div>
+
+        <!-- Clock -->
+        <div class="card" id="clock-card" style="margin-bottom:16px">
+          <div>
+            <div id="clock-display">00:00:00</div>
+            <div id="clock-date">Monday, 1 January 2026</div>
+          </div>
+          <div id="clock-right">
+            <div id="clock-day">Day 1 of 365</div>
+          </div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="grid-4 section-gap">
+          <div class="card metric-card total">
+            <div class="metric-label" data-i18n="metric.total">Total Tasks</div>
+            <div class="metric-value" id="m-total">0</div>
+            <div class="metric-sub" data-i18n="metric.allTasks">All tasks</div>
+          </div>
+          <div class="card metric-card done">
+            <div class="metric-label" data-i18n="metric.completed">Completed</div>
+            <div class="metric-value" id="m-done">0</div>
+            <div class="metric-sub" data-i18n="metric.finished">Finished</div>
+          </div>
+          <div class="card metric-card progress">
+            <div class="metric-label" data-i18n="metric.inProgress">In Progress</div>
+            <div class="metric-value" id="m-prog">0</div>
+            <div class="metric-sub" data-i18n="metric.active">Active work</div>
+          </div>
+          <div class="card metric-card overdue">
+            <div class="metric-label" data-i18n="metric.overdue">Overdue</div>
+            <div class="metric-value" id="m-over">0</div>
+            <div class="metric-sub" data-i18n="metric.pastDue">Past due date</div>
+          </div>
+        </div>
+
+        <div class="grid-2 section-gap">
+          <div class="card">
+            <div class="card-title" data-i18n="dashboard.incompleteTasks">Incomplete Tasks</div>
+            <div id="dash-incomplete-list" class="dash-task-list">
+              <div class="dash-empty" data-i18n="dashboard.noTasks">No tasks yet</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title" data-i18n="dashboard.completedTasks">Completed Tasks</div>
+            <div id="dash-complete-list" class="dash-task-list">
+              <div class="dash-empty" data-i18n="dashboard.noCompleted">No completed tasks yet</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2 section-gap">
+          <!-- Year Progress -->
+          <div class="card">
+            <div class="card-title" data-i18n="dashboard.yearProgress">Year Progress</div>
+            <div id="year-pct">0%</div>
+            <div id="year-progress-bar-track">
+              <div id="year-progress-bar-fill" style="width:0%"></div>
+            </div>
+            <div id="year-stats">
+              <span id="year-day-label">Day 0 of 365</span>
+              <span id="year-remain-label">365 days remaining</span>
+            </div>
+          </div>
+
+          <!-- Dot Calendar -->
+          <div class="card">
+            <div class="card-title" data-i18n="dashboard.yearCalendar">Year Calendar</div>
+            <div id="dot-calendar"></div>
+            <div class="dot-legend">
+              <div class="dot-legend-item"><div class="dot-legend-dot" style="background:var(--red)"></div><span data-i18n="cal.past">Past</span></div>
+              <div class="dot-legend-item"><div class="dot-legend-dot" style="background:var(--amber)"></div><span data-i18n="cal.today">Today</span></div>
+              <div class="dot-legend-item"><div class="dot-legend-dot" style="background:var(--green)"></div><span data-i18n="cal.upcoming">Upcoming</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card workload-card">
+          <div class="card-title" data-i18n="dashboard.workload">Workload Trend</div>
+          <canvas id="workload-chart" class="workload-canvas" width="900" height="180"></canvas>
+          <div class="workload-legend">
+            <span><span class="workload-dot"></span><span data-i18n="dashboard.moreWork">More work</span></span>
+            <span><span class="workload-dot low"></span><span data-i18n="dashboard.lessWork">Less work</span></span>
+          </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="card">
+          <div class="card-title" data-i18n="dashboard.recentActivity">Recent Activity</div>
+          <div id="activity-feed">
+            <div class="feed-empty" data-i18n="dashboard.noActivity">No activity yet. Add a task to get started.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ TASKS ════════ -->
+      <div id="tab-tasks" class="tab-panel">
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="nav.tasks">Tasks</h1>
+          <p class="page-sub" data-i18n="tasks.sub">Add, manage, and track all your tasks</p>
+        </div>
+
+        <!-- Add Task Form -->
+        <div class="card mb-16">
+          <div class="card-title" data-i18n="tasks.addTask">Add New Task</div>
+          <div class="add-task-form">
+            <div class="form-group">
+              <label class="form-label" data-i18n="tasks.title">Title</label>
+              <input class="form-input" id="f-title" type="text" data-i18n-placeholder="tasks.titlePh" placeholder="Task title…" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="tasks.assignee">Assignee</label>
+              <input class="form-input" id="f-assignee" type="text" data-i18n-placeholder="tasks.assigneePh" placeholder="Name…" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="tasks.dueDate">Due Date</label>
+              <input class="form-input" id="f-due" type="date" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="tasks.priority">Priority</label>
+              <select class="form-select" id="f-priority">
+                <option value="Low" data-i18n="priority.low">Low</option>
+                <option value="Medium" selected data-i18n="priority.medium">Medium</option>
+                <option value="High" data-i18n="priority.high">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="tasks.status">Status</label>
+              <select class="form-select" id="f-status">
+                <option value="Pending" data-i18n="status.pending">Pending</option>
+                <option value="In Progress" data-i18n="status.inProgress">In Progress</option>
+                <option value="Completed" data-i18n="status.completed">Completed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">&nbsp;</label>
+              <button class="btn btn-primary" id="add-task-btn">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="6" y1="1" x2="6" y2="11"/><line x1="1" y1="6" x2="11" y2="6"/>
+                </svg>
+                <span data-i18n="tasks.add">Add</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Table -->
+        <div class="card">
+          <div class="flex items-center justify-between mb-16">
+            <div class="card-title" data-i18n="tasks.allTasks">All Tasks</div>
+            <span id="task-count-badge" class="badge badge-pending">0 tasks</span>
+          </div>
+          <div id="task-table-wrap">
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <div class="empty-state-title" data-i18n="tasks.empty">No tasks yet</div>
+              <div class="empty-state-sub" data-i18n="tasks.emptySub">Add your first task using the form above</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ BRIEFINGS ════════ -->
+      <div id="tab-briefings" class="tab-panel">
+        <div class="page-header flex items-center justify-between" style="margin-bottom:20px">
+          <div>
+            <h1 class="page-title" data-i18n="nav.briefings">Briefings</h1>
+            <p class="page-sub" data-i18n="briefings.sub">Auto-generated morning and evening summaries</p>
+          </div>
+          <div class="briefing-action-row">
+            <button class="btn btn-primary" id="gen-briefing-action">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 6h8"/><path d="M7 2l3 4-3 4"/>
+              </svg>
+              <span data-i18n="briefings.actionBtn">Action Briefing</span>
+            </button>
+            <button class="btn btn-secondary" id="gen-briefing-completion">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="2,6 5,9 10,3"/>
+              </svg>
+              <span data-i18n="briefings.completionBtn">Completion Briefing</span>
+            </button>
+          </div>
+        </div>
+        <div id="briefings-list-view">
+          <div id="briefings-list">
+            <div class="empty-state">
+              <div class="empty-state-icon">🌅</div>
+              <div class="empty-state-title" data-i18n="briefings.empty">No briefings yet</div>
+              <div class="empty-state-sub" data-i18n="briefings.emptySub">Briefings auto-generate at your scheduled times, or click Generate Now</div>
+            </div>
+          </div>
+        </div>
+        <div id="briefing-detail-view" class="briefing-detail-view">
+          <div class="briefing-detail-header">
+            <button class="btn btn-secondary" id="briefing-back-btn">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 2L4 6l4 4"/>
+              </svg>
+              <span data-i18n="briefings.back">Back to Briefings</span>
+            </button>
+          </div>
+          <div id="briefing-detail-card"></div>
+        </div>
+      </div>
+
+      <!-- ════════ REPORTS ════════ -->
+      <div id="tab-reports" class="tab-panel">
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="nav.reports">Reports</h1>
+          <p class="page-sub" data-i18n="reports.sub">Weekly, monthly, and annual productivity reports</p>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-title" data-i18n="reports.generate">Generate Report</div>
+          <div class="report-btn-row">
+            <button class="btn btn-secondary" id="rpt-weekly">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="1" y="2" width="11" height="10" rx="1.5"/>
+                <line x1="4" y1="1" x2="4" y2="4"/><line x1="9" y1="1" x2="9" y2="4"/>
+                <line x1="1" y1="6" x2="12" y2="6"/>
+              </svg>
+              <span data-i18n="reports.weekly">Weekly Report</span>
+            </button>
+            <button class="btn btn-secondary" id="rpt-monthly">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="1" y="2" width="11" height="10" rx="1.5"/>
+                <line x1="4" y1="1" x2="4" y2="4"/><line x1="9" y1="1" x2="9" y2="4"/>
+                <line x1="1" y1="6" x2="12" y2="6"/>
+                <circle cx="4.5" cy="8.5" r="1" fill="currentColor" stroke="none"/>
+                <circle cx="6.5" cy="8.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+              <span data-i18n="reports.monthly">Monthly Report</span>
+            </button>
+            <button class="btn btn-secondary" id="rpt-annual">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="1" y="2" width="11" height="10" rx="1.5"/>
+                <line x1="4" y1="1" x2="4" y2="4"/><line x1="9" y1="1" x2="9" y2="4"/>
+                <path d="M3 10l2-2 2 2 3-3"/>
+              </svg>
+              <span data-i18n="reports.annual">Annual Report</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="reports-list">
+          <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <div class="empty-state-title" data-i18n="reports.empty">No reports yet</div>
+            <div class="empty-state-sub" data-i18n="reports.emptySub">Click a report button above to generate your first report</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ WIZARD ════════ -->
+      <div id="tab-wizard" class="tab-panel">
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="nav.wizard">Briefing Wizard</h1>
+          <p class="page-sub" data-i18n="wizard.sub">Configure your morning and evening briefing times</p>
+        </div>
+
+        <div class="wizard-section">
+          <!-- Morning -->
+          <div class="card time-slider-card">
+            <div class="slider-header">
+              <div class="slider-title">
+                <span>🌅</span>
+                <span data-i18n="wizard.morning">Morning Briefing</span>
+              </div>
+              <div class="slider-preview">
+                <div class="slider-time-12" id="morning-preview-12">7:00 AM</div>
+                <div class="slider-time-24" id="morning-preview-24">07:00</div>
+              </div>
+            </div>
+            <input type="range" id="morning-slider" min="4" max="11" value="7" step="1" />
+            <div class="slider-range-labels">
+              <span>4:00 AM</span><span>11:00 AM</span>
+            </div>
+          </div>
+
+          <!-- Evening -->
+          <div class="card time-slider-card">
+            <div class="slider-header">
+              <div class="slider-title">
+                <span>🌆</span>
+                <span data-i18n="wizard.evening">Evening Briefing</span>
+              </div>
+              <div class="slider-preview">
+                <div class="slider-time-12" id="evening-preview-12">6:00 PM</div>
+                <div class="slider-time-24" id="evening-preview-24">18:00</div>
+              </div>
+            </div>
+            <input type="range" id="evening-slider" min="15" max="22" value="18" step="1" />
+            <div class="slider-range-labels">
+              <span>3:00 PM</span><span>10:00 PM</span>
+            </div>
+          </div>
+
+          <div class="wizard-save-row">
+            <button class="btn btn-primary" id="save-schedule-btn">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 2h7l1 1v7a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/>
+                <path d="M4 2v3h4V2"/><path d="M3 7h6"/>
+              </svg>
+              <span data-i18n="wizard.save">Save Schedule</span>
+            </button>
+            <div class="wizard-saved-msg" id="wizard-saved">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="2 7 5 10 10 3"/>
+              </svg>
+              <span data-i18n="wizard.saved">Schedule saved!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ SETTINGS ════════ -->
+      <div id="tab-settings" class="tab-panel">
+        <div class="page-header">
+          <h1 class="page-title" data-i18n="nav.settings">Settings</h1>
+          <p class="page-sub" data-i18n="settings.sub">Appearance and language preferences</p>
+        </div>
+
+        <!-- Appearance -->
+        <div class="settings-section">
+          <div class="settings-title" data-i18n="settings.appearance">Appearance</div>
+          <div class="setting-row">
+            <div class="setting-info">
+              <div class="setting-label" data-i18n="settings.darkMode">Dark Mode</div>
+              <div class="setting-desc" data-i18n="settings.darkModeDesc">Switch between dark and light themes</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="dark-mode-toggle" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Language -->
+        <div class="settings-section">
+          <div class="settings-title" data-i18n="settings.language">Language</div>
+          <div class="lang-grid">
+            <button class="lang-btn active" data-lang="en">
+              <span class="lang-flag">🇬🇧</span>
+              <span>English</span>
+            </button>
+            <button class="lang-btn" data-lang="bn">
+              <span class="lang-flag">🇧🇩</span>
+              <span>বাংলা</span>
+            </button>
+            <button class="lang-btn" data-lang="ar">
+              <span class="lang-flag">🇸🇦</span>
+              <span>العربية</span>
+            </button>
+            <button class="lang-btn" data-lang="fr">
+              <span class="lang-flag">🇫🇷</span>
+              <span>Français</span>
+            </button>
+            <button class="lang-btn" data-lang="es">
+              <span class="lang-flag">🇪🇸</span>
+              <span>Español</span>
+            </button>
+            <button class="lang-btn" data-lang="zh">
+              <span class="lang-flag">🇨🇳</span>
+              <span>中文</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════ -->
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   I18N STRINGS
+═══════════════════════════════════════════════════════════════ */
+const I18N = {
+  en: {
+    appName: 'TaskIgnite',
+    'nav.dashboard': 'Dashboard', 'nav.tasks': 'Tasks', 'nav.briefings': 'Briefings',
+    'nav.reports': 'Reports', 'nav.wizard': 'Wizard', 'nav.settings': 'Settings',
+    'dashboard.sub': 'Live overview of your tasks and year progress',
+    'dashboard.yearProgress': 'Year Progress', 'dashboard.yearCalendar': 'Year Calendar',
+    'dashboard.recentActivity': 'Recent Activity', 'dashboard.noActivity': 'No activity yet. Add a task to get started.',
+    'dashboard.incompleteTasks': 'Incomplete Tasks', 'dashboard.completedTasks': 'Completed Tasks',
+    'dashboard.noTasks': 'No tasks yet', 'dashboard.noCompleted': 'No completed tasks yet',
+    'dashboard.markComplete': 'Mark complete', 'dashboard.markIncomplete': 'Mark incomplete',
+    'dashboard.workload': 'Workload Trend', 'dashboard.moreWork': 'More work', 'dashboard.lessWork': 'Less work',
+    'metric.total': 'Total Tasks', 'metric.completed': 'Completed', 'metric.inProgress': 'In Progress',
+    'metric.overdue': 'Overdue', 'metric.allTasks': 'All tasks', 'metric.finished': 'Finished',
+    'metric.active': 'Active work', 'metric.pastDue': 'Past due date',
+    'cal.past': 'Past', 'cal.today': 'Today', 'cal.upcoming': 'Upcoming',
+    'tasks.sub': 'Add, manage, and track all your tasks', 'tasks.addTask': 'Add New Task',
+    'tasks.title': 'Title', 'tasks.titlePh': 'Task title…', 'tasks.assignee': 'Assignee',
+    'tasks.assigneePh': 'Name…', 'tasks.dueDate': 'Due Date', 'tasks.priority': 'Priority',
+    'tasks.status': 'Status', 'tasks.add': 'Add', 'tasks.allTasks': 'All Tasks',
+    'tasks.empty': 'No tasks yet', 'tasks.emptySub': 'Add your first task using the form above',
+    'tasks.colTitle': 'Title', 'tasks.colAssignee': 'Assignee', 'tasks.colDue': 'Due Date',
+    'tasks.colPriority': 'Priority', 'tasks.colStatus': 'Status', 'tasks.colActions': 'Actions',
+    'priority.low': 'Low', 'priority.medium': 'Medium', 'priority.high': 'High',
+    'status.pending': 'Pending', 'status.inProgress': 'In Progress', 'status.completed': 'Completed',
+    'status.overdue': 'Overdue',
+    'briefings.sub': 'Auto-generated morning and evening summaries',
+    'briefings.generateNow': 'Generate Now', 'briefings.empty': 'No briefings yet',
+    'briefings.emptySub': 'Briefings auto-generate at your scheduled times, or click Generate Now',
+    'briefings.actionBtn': 'Action Briefing', 'briefings.completionBtn': 'Completion Briefing',
+    'briefings.back': 'Back to Briefings',
+    'briefings.morning': '🌅 Morning Briefing', 'briefings.evening': '🌆 Evening Briefing',
+    'briefings.manual': '⚡ On-Demand Briefing',
+    'briefings.remaining': 'Action Briefing', 'briefings.completed': 'Completion Briefing',
+    'briefings.totalInScope': 'Tasks', 'briefings.noTasks': 'No tasks in this list',
+    'briefings.noMeta': 'No extra details',
+    'reports.sub': 'Weekly, monthly, and annual productivity reports',
+    'reports.generate': 'Generate Report', 'reports.weekly': 'Weekly Report',
+    'reports.monthly': 'Monthly Report', 'reports.annual': 'Annual Report',
+    'reports.empty': 'No reports yet', 'reports.emptySub': 'Click a report button above to generate your first report',
+    'reports.created': 'Created', 'reports.completed': 'Completed', 'reports.deleted': 'Deleted',
+    'reports.rate': 'Completion Rate', 'reports.highPri': 'High Priority', 'reports.overdue': 'Overdue',
+    'reports.download': 'Download PDF', 'reports.print': 'Print PDF',
+    'wizard.sub': 'Configure your morning and evening briefing times',
+    'wizard.morning': 'Morning Briefing', 'wizard.evening': 'Evening Briefing',
+    'wizard.save': 'Save Schedule', 'wizard.saved': 'Schedule saved!',
+    'settings.sub': 'Appearance and language preferences', 'settings.appearance': 'Appearance',
+    'settings.darkMode': 'Dark Mode', 'settings.darkModeDesc': 'Switch between dark and light themes',
+    'settings.language': 'Language', 'settings.toggleTheme': 'Toggle Theme',
+    'activity.added': 'added', 'activity.deleted': 'deleted',
+    'name.title': 'Welcome', 'name.sub': 'Tell us your name to personalize your dashboard.',
+    'name.placeholder': 'Your name', 'name.save': 'Save',
+    'greet.morning': 'Good morning', 'greet.noon': 'Good noon',
+    'greet.afternoon': 'Good afternoon', 'greet.night': 'Good night',
+  },
+  bn: {
+    appName: 'TaskIgnite',
+    'nav.dashboard': 'ড্যাশবোর্ড', 'nav.tasks': 'কাজ', 'nav.briefings': 'ব্রিফিং',
+    'nav.reports': 'রিপোর্ট', 'nav.wizard': 'উইজার্ড', 'nav.settings': 'সেটিংস',
+    'dashboard.sub': 'আপনার কাজ এবং বার্ষিক অগ্রগতির লাইভ ওভারভিউ',
+    'dashboard.yearProgress': 'বার্ষিক অগ্রগতি', 'dashboard.yearCalendar': 'বার্ষিক ক্যালেন্ডার',
+    'dashboard.recentActivity': 'সাম্প্রতিক কার্যকলাপ', 'dashboard.noActivity': 'এখনো কোনো কার্যকলাপ নেই।',
+    'dashboard.incompleteTasks': 'অসম্পূর্ণ কাজ', 'dashboard.completedTasks': 'সম্পন্ন কাজ',
+    'dashboard.noTasks': 'এখনো কোনো কাজ নেই', 'dashboard.noCompleted': 'এখনো কোনো সম্পন্ন কাজ নেই',
+    'dashboard.markComplete': 'সম্পন্ন হিসেবে চিহ্নিত করুন', 'dashboard.markIncomplete': 'অসম্পূর্ণ হিসেবে চিহ্নিত করুন',
+    'dashboard.workload': 'কাজের প্রবণতা', 'dashboard.moreWork': 'বেশি কাজ', 'dashboard.lessWork': 'কম কাজ',
+    'metric.total': 'মোট কাজ', 'metric.completed': 'সম্পন্ন', 'metric.inProgress': 'চলমান',
+    'metric.overdue': 'মেয়াদ উত্তীর্ণ', 'metric.allTasks': 'সব কাজ', 'metric.finished': 'সম্পূর্ণ',
+    'metric.active': 'সক্রিয় কাজ', 'metric.pastDue': 'নির্ধারিত তারিখ পেরিয়ে গেছে',
+    'cal.past': 'অতীত', 'cal.today': 'আজ', 'cal.upcoming': 'আসন্ন',
+    'tasks.sub': 'আপনার সব কাজ যোগ করুন এবং পরিচালনা করুন', 'tasks.addTask': 'নতুন কাজ যোগ করুন',
+    'tasks.title': 'শিরোনাম', 'tasks.titlePh': 'কাজের শিরোনাম…', 'tasks.assignee': 'দায়িত্বপ্রাপ্ত',
+    'tasks.assigneePh': 'নাম…', 'tasks.dueDate': 'নির্ধারিত তারিখ', 'tasks.priority': 'অগ্রাধিকার',
+    'tasks.status': 'অবস্থা', 'tasks.add': 'যোগ করুন', 'tasks.allTasks': 'সব কাজ',
+    'tasks.empty': 'এখনো কোনো কাজ নেই', 'tasks.emptySub': 'উপরের ফর্ম ব্যবহার করে প্রথম কাজ যোগ করুন',
+    'tasks.colTitle': 'শিরোনাম', 'tasks.colAssignee': 'দায়িত্বপ্রাপ্ত', 'tasks.colDue': 'নির্ধারিত তারিখ',
+    'tasks.colPriority': 'অগ্রাধিকার', 'tasks.colStatus': 'অবস্থা', 'tasks.colActions': 'ক্রিয়া',
+    'priority.low': 'নিম্ন', 'priority.medium': 'মাঝারি', 'priority.high': 'উচ্চ',
+    'status.pending': 'অপেক্ষারত', 'status.inProgress': 'চলমান', 'status.completed': 'সম্পন্ন', 'status.overdue': 'মেয়াদ উত্তীর্ণ',
+    'briefings.sub': 'স্বয়ংক্রিয় সকাল ও সন্ধ্যার সারসংক্ষেপ',
+    'briefings.generateNow': 'এখনই তৈরি করুন', 'briefings.empty': 'এখনো কোনো ব্রিফিং নেই',
+    'briefings.emptySub': 'ব্রিফিং নির্ধারিত সময়ে স্বয়ংক্রিয়ভাবে তৈরি হয়',
+    'briefings.actionBtn': 'কাজের ব্রিফিং', 'briefings.completionBtn': 'সম্পন্নের ব্রিফিং',
+    'briefings.back': 'ব্রিফিং তালিকায় ফিরে যান',
+    'briefings.morning': '🌅 সকালের ব্রিফিং', 'briefings.evening': '🌆 সন্ধ্যার ব্রিফিং', 'briefings.manual': '⚡ তাৎক্ষণিক ব্রিফিং',
+    'briefings.remaining': 'কাজের ব্রিফিং', 'briefings.completed': 'সম্পন্নের ব্রিফিং',
+    'briefings.totalInScope': 'কাজ', 'briefings.noTasks': 'এই তালিকায় কোনো কাজ নেই',
+    'briefings.noMeta': 'কোনো অতিরিক্ত তথ্য নেই',
+    'reports.sub': 'সাপ্তাহিক, মাসিক এবং বার্ষিক উৎপাদনশীলতা রিপোর্ট',
+    'reports.generate': 'রিপোর্ট তৈরি করুন', 'reports.weekly': 'সাপ্তাহিক রিপোর্ট',
+    'reports.monthly': 'মাসিক রিপোর্ট', 'reports.annual': 'বার্ষিক রিপোর্ট',
+    'reports.empty': 'এখনো কোনো রিপোর্ট নেই', 'reports.emptySub': 'প্রথম রিপোর্ট তৈরি করতে উপরের বোতাম ক্লিক করুন',
+    'reports.created': 'তৈরি', 'reports.completed': 'সম্পন্ন', 'reports.deleted': 'মুছে ফেলা',
+    'reports.rate': 'সম্পন্নের হার', 'reports.highPri': 'উচ্চ অগ্রাধিকার', 'reports.overdue': 'মেয়াদ উত্তীর্ণ',
+    'reports.download': 'পিডিএফ ডাউনলোড', 'reports.print': 'পিডিএফ প্রিন্ট',
+    'wizard.sub': 'আপনার সকাল ও সন্ধ্যার ব্রিফিং সময় নির্ধারণ করুন',
+    'wizard.morning': 'সকালের ব্রিফিং', 'wizard.evening': 'সন্ধ্যার ব্রিফিং',
+    'wizard.save': 'সময়সূচী সংরক্ষণ করুন', 'wizard.saved': 'সময়সূচী সংরক্ষিত হয়েছে!',
+    'settings.sub': 'অবদর্শন এবং ভাষা পছন্দ', 'settings.appearance': 'অবদর্শন',
+    'settings.darkMode': 'ডার্ক মোড', 'settings.darkModeDesc': 'ডার্ক এবং লাইট থিমের মধ্যে পরিবর্তন করুন',
+    'settings.language': 'ভাষা', 'settings.toggleTheme': 'থিম পরিবর্তন করুন',
+    'activity.added': 'যোগ করা হয়েছে', 'activity.deleted': 'মুছে ফেলা হয়েছে',
+    'name.title': 'স্বাগতম', 'name.sub': 'ড্যাশবোর্ড ব্যক্তিগত করতে আপনার নাম লিখুন।',
+    'name.placeholder': 'আপনার নাম', 'name.save': 'সংরক্ষণ করুন',
+    'greet.morning': 'শুভ সকাল', 'greet.noon': 'শুভ দুপুর',
+    'greet.afternoon': 'শুভ বিকাল', 'greet.night': 'শুভ রাত্রি',
+  },
+  ar: {
+    appName: 'TaskIgnite',
+    'nav.dashboard': 'لوحة التحكم', 'nav.tasks': 'المهام', 'nav.briefings': 'الإحاطات',
+    'nav.reports': 'التقارير', 'nav.wizard': 'المعالج', 'nav.settings': 'الإعدادات',
+    'dashboard.sub': 'نظرة عامة حية على مهامك وتقدم العام',
+    'dashboard.yearProgress': 'تقدم العام', 'dashboard.yearCalendar': 'تقويم العام',
+    'dashboard.recentActivity': 'النشاط الأخير', 'dashboard.noActivity': 'لا يوجد نشاط حتى الآن.',
+    'dashboard.incompleteTasks': 'مهام غير مكتملة', 'dashboard.completedTasks': 'مهام مكتملة',
+    'dashboard.noTasks': 'لا توجد مهام بعد', 'dashboard.noCompleted': 'لا توجد مهام مكتملة بعد',
+    'dashboard.markComplete': 'وضع علامة مكتمل', 'dashboard.markIncomplete': 'وضع علامة غير مكتمل',
+    'dashboard.workload': 'اتجاه العمل', 'dashboard.moreWork': 'عمل أكثر', 'dashboard.lessWork': 'عمل أقل',
+    'metric.total': 'إجمالي المهام', 'metric.completed': 'مكتمل', 'metric.inProgress': 'قيد التنفيذ',
+    'metric.overdue': 'متأخر', 'metric.allTasks': 'كل المهام', 'metric.finished': 'منتهي',
+    'metric.active': 'العمل النشط', 'metric.pastDue': 'تجاوز الموعد',
+    'cal.past': 'مضى', 'cal.today': 'اليوم', 'cal.upcoming': 'قادم',
+    'tasks.sub': 'أضف جميع مهامك وأدرها', 'tasks.addTask': 'إضافة مهمة جديدة',
+    'tasks.title': 'العنوان', 'tasks.titlePh': 'عنوان المهمة…', 'tasks.assignee': 'المكلف',
+    'tasks.assigneePh': 'الاسم…', 'tasks.dueDate': 'تاريخ الاستحقاق', 'tasks.priority': 'الأولوية',
+    'tasks.status': 'الحالة', 'tasks.add': 'إضافة', 'tasks.allTasks': 'كل المهام',
+    'tasks.empty': 'لا توجد مهام بعد', 'tasks.emptySub': 'أضف مهمتك الأولى باستخدام النموذج أعلاه',
+    'tasks.colTitle': 'العنوان', 'tasks.colAssignee': 'المكلف', 'tasks.colDue': 'تاريخ الاستحقاق',
+    'tasks.colPriority': 'الأولوية', 'tasks.colStatus': 'الحالة', 'tasks.colActions': 'الإجراءات',
+    'priority.low': 'منخفض', 'priority.medium': 'متوسط', 'priority.high': 'مرتفع',
+    'status.pending': 'معلق', 'status.inProgress': 'قيد التنفيذ', 'status.completed': 'مكتمل', 'status.overdue': 'متأخر',
+    'briefings.sub': 'ملخصات صباحية ومسائية تلقائية',
+    'briefings.generateNow': 'إنشاء الآن', 'briefings.empty': 'لا توجد إحاطات بعد',
+    'briefings.emptySub': 'تُنشأ الإحاطات تلقائياً في الأوقات المجدولة',
+    'briefings.actionBtn': 'إحاطة التنفيذ', 'briefings.completionBtn': 'إحاطة الإكمال',
+    'briefings.back': 'العودة إلى الإحاطات',
+    'briefings.morning': '🌅 إحاطة صباحية', 'briefings.evening': '🌆 إحاطة مسائية', 'briefings.manual': '⚡ إحاطة فورية',
+    'briefings.remaining': 'المهام المتبقية', 'briefings.completed': 'المهام المكتملة',
+    'briefings.totalInScope': 'المهام', 'briefings.noTasks': 'لا توجد مهام في هذه القائمة',
+    'briefings.noMeta': 'لا توجد تفاصيل إضافية',
+    'reports.sub': 'تقارير الإنتاجية الأسبوعية والشهرية والسنوية',
+    'reports.generate': 'إنشاء تقرير', 'reports.weekly': 'تقرير أسبوعي',
+    'reports.monthly': 'تقرير شهري', 'reports.annual': 'تقرير سنوي',
+    'reports.empty': 'لا توجد تقارير بعد', 'reports.emptySub': 'انقر فوق زر أعلاه لإنشاء تقريرك الأول',
+    'reports.created': 'تم الإنشاء', 'reports.completed': 'مكتمل', 'reports.deleted': 'تم الحذف',
+    'reports.rate': 'معدل الإكمال', 'reports.highPri': 'أولوية عالية', 'reports.overdue': 'متأخر',
+    'reports.download': 'تحميل PDF', 'reports.print': 'طباعة PDF',
+    'wizard.sub': 'ضبط أوقات الإحاطة الصباحية والمسائية',
+    'wizard.morning': 'الإحاطة الصباحية', 'wizard.evening': 'الإحاطة المسائية',
+    'wizard.save': 'حفظ الجدول', 'wizard.saved': 'تم حفظ الجدول!',
+    'settings.sub': 'تفضيلات المظهر واللغة', 'settings.appearance': 'المظهر',
+    'settings.darkMode': 'الوضع الداكن', 'settings.darkModeDesc': 'التبديل بين الوضع الداكن والفاتح',
+    'settings.language': 'اللغة', 'settings.toggleTheme': 'تبديل السمة',
+    'activity.added': 'أضيف', 'activity.deleted': 'حُذف',
+    'name.title': 'مرحباً', 'name.sub': 'أدخل اسمك لتخصيص لوحة التحكم.',
+    'name.placeholder': 'اسمك', 'name.save': 'حفظ',
+    'greet.morning': 'صباح الخير', 'greet.noon': 'نهارك سعيد',
+    'greet.afternoon': 'مساء الخير', 'greet.night': 'ليلة سعيدة',
+  },
+  fr: {
+    appName: 'TaskIgnite',
+    'nav.dashboard': 'Tableau de bord', 'nav.tasks': 'Tâches', 'nav.briefings': 'Briefings',
+    'nav.reports': 'Rapports', 'nav.wizard': 'Assistant', 'nav.settings': 'Paramètres',
+    'dashboard.sub': 'Vue en direct de vos tâches et de la progression annuelle',
+    'dashboard.yearProgress': 'Progression annuelle', 'dashboard.yearCalendar': 'Calendrier annuel',
+    'dashboard.recentActivity': 'Activité récente', 'dashboard.noActivity': 'Aucune activité pour l\'instant.',
+    'dashboard.incompleteTasks': 'Tâches incomplètes', 'dashboard.completedTasks': 'Tâches terminées',
+    'dashboard.noTasks': 'Aucune tâche pour l\'instant', 'dashboard.noCompleted': 'Aucune tâche terminée pour l\'instant',
+    'dashboard.markComplete': 'Marquer comme terminée', 'dashboard.markIncomplete': 'Marquer comme incomplète',
+    'dashboard.workload': 'Tendance de charge', 'dashboard.moreWork': 'Plus de travail', 'dashboard.lessWork': 'Moins de travail',
+    'metric.total': 'Total', 'metric.completed': 'Terminées', 'metric.inProgress': 'En cours',
+    'metric.overdue': 'En retard', 'metric.allTasks': 'Toutes', 'metric.finished': 'Terminé',
+    'metric.active': 'Travail actif', 'metric.pastDue': 'Date dépassée',
+    'cal.past': 'Passé', 'cal.today': 'Aujourd\'hui', 'cal.upcoming': 'À venir',
+    'tasks.sub': 'Ajoutez, gérez et suivez toutes vos tâches', 'tasks.addTask': 'Ajouter une tâche',
+    'tasks.title': 'Titre', 'tasks.titlePh': 'Titre de la tâche…', 'tasks.assignee': 'Assigné à',
+    'tasks.assigneePh': 'Nom…', 'tasks.dueDate': 'Date d\'échéance', 'tasks.priority': 'Priorité',
+    'tasks.status': 'Statut', 'tasks.add': 'Ajouter', 'tasks.allTasks': 'Toutes les tâches',
+    'tasks.empty': 'Aucune tâche', 'tasks.emptySub': 'Ajoutez votre première tâche ci-dessus',
+    'tasks.colTitle': 'Titre', 'tasks.colAssignee': 'Assigné', 'tasks.colDue': 'Échéance',
+    'tasks.colPriority': 'Priorité', 'tasks.colStatus': 'Statut', 'tasks.colActions': 'Actions',
+    'priority.low': 'Faible', 'priority.medium': 'Moyen', 'priority.high': 'Élevé',
+    'status.pending': 'En attente', 'status.inProgress': 'En cours', 'status.completed': 'Terminé', 'status.overdue': 'En retard',
+    'briefings.sub': 'Résumés automatiques du matin et du soir',
+    'briefings.generateNow': 'Générer maintenant', 'briefings.empty': 'Aucun briefing',
+    'briefings.emptySub': 'Les briefings se génèrent automatiquement aux heures planifiées',
+    'briefings.actionBtn': 'Briefing d\'action', 'briefings.completionBtn': 'Briefing de fin',
+    'briefings.back': 'Retour aux briefings',
+    'briefings.morning': '🌅 Briefing matinal', 'briefings.evening': '🌆 Briefing du soir', 'briefings.manual': '⚡ Briefing instantané',
+    'briefings.remaining': 'Tâches restantes', 'briefings.completed': 'Tâches terminées',
+    'briefings.totalInScope': 'Tâches', 'briefings.noTasks': 'Aucune tâche dans cette liste',
+    'briefings.noMeta': 'Aucun détail supplémentaire',
+    'reports.sub': 'Rapports de productivité hebdomadaires, mensuels et annuels',
+    'reports.generate': 'Générer un rapport', 'reports.weekly': 'Rapport hebdomadaire',
+    'reports.monthly': 'Rapport mensuel', 'reports.annual': 'Rapport annuel',
+    'reports.empty': 'Aucun rapport', 'reports.emptySub': 'Cliquez ci-dessus pour générer votre premier rapport',
+    'reports.created': 'Créées', 'reports.completed': 'Terminées', 'reports.deleted': 'Supprimées',
+    'reports.rate': 'Taux d\'achèvement', 'reports.highPri': 'Haute priorité', 'reports.overdue': 'En retard',
+    'reports.download': 'Télécharger PDF', 'reports.print': 'Imprimer PDF',
+    'wizard.sub': 'Configurez vos horaires de briefing matin et soir',
+    'wizard.morning': 'Briefing matinal', 'wizard.evening': 'Briefing du soir',
+    'wizard.save': 'Enregistrer', 'wizard.saved': 'Planning enregistré!',
+    'settings.sub': 'Préférences d\'apparence et de langue', 'settings.appearance': 'Apparence',
+    'settings.darkMode': 'Mode sombre', 'settings.darkModeDesc': 'Basculer entre les thèmes sombre et clair',
+    'settings.language': 'Langue', 'settings.toggleTheme': 'Changer le thème',
+    'activity.added': 'ajouté', 'activity.deleted': 'supprimé',
+    'name.title': 'Bienvenue', 'name.sub': 'Indiquez votre nom pour personnaliser le tableau de bord.',
+    'name.placeholder': 'Votre nom', 'name.save': 'Enregistrer',
+    'greet.morning': 'Bonjour', 'greet.noon': 'Bon après-midi',
+    'greet.afternoon': 'Bon après-midi', 'greet.night': 'Bonne nuit',
+  },
+  es: {
+    appName: 'TaskIgnite',
+    'nav.dashboard': 'Panel', 'nav.tasks': 'Tareas', 'nav.briefings': 'Briefings',
+    'nav.reports': 'Informes', 'nav.wizard': 'Asistente', 'nav.settings': 'Ajustes',
+    'dashboard.sub': 'Vista en vivo de tus tareas y progreso anual',
+    'dashboard.yearProgress': 'Progreso anual', 'dashboard.yearCalendar': 'Calendario anual',
+    'dashboard.recentActivity': 'Actividad reciente', 'dashboard.noActivity': 'Sin actividad aún.',
+    'dashboard.incompleteTasks': 'Tareas incompletas', 'dashboard.completedTasks': 'Tareas completadas',
+    'dashboard.noTasks': 'Sin tareas aún', 'dashboard.noCompleted': 'Sin tareas completadas aún',
+    'dashboard.markComplete': 'Marcar como completada', 'dashboard.markIncomplete': 'Marcar como incompleta',
+    'dashboard.workload': 'Tendencia de trabajo', 'dashboard.moreWork': 'Más trabajo', 'dashboard.lessWork': 'Menos trabajo',
+    'metric.total': 'Total', 'metric.completed': 'Completadas', 'metric.inProgress': 'En progreso',
+    'metric.overdue': 'Vencidas', 'metric.allTasks': 'Todas', 'metric.finished': 'Terminado',
+    'metric.active': 'Trabajo activo', 'metric.pastDue': 'Fecha vencida',
+    'cal.past': 'Pasado', 'cal.today': 'Hoy', 'cal.upcoming': 'Próximo',
+    'tasks.sub': 'Agrega, gestiona y realiza seguimiento de todas tus tareas',
+    'tasks.addTask': 'Agregar tarea', 'tasks.title': 'Título', 'tasks.titlePh': 'Título de la tarea…',
+    'tasks.assignee': 'Asignado', 'tasks.assigneePh': 'Nombre…', 'tasks.dueDate': 'Fecha límite',
+    'tasks.priority': 'Prioridad', 'tasks.status': 'Estado', 'tasks.add': 'Agregar',
+    'tasks.allTasks': 'Todas las tareas', 'tasks.empty': 'Sin tareas', 'tasks.emptySub': 'Agrega tu primera tarea arriba',
+    'tasks.colTitle': 'Título', 'tasks.colAssignee': 'Asignado', 'tasks.colDue': 'Fecha límite',
+    'tasks.colPriority': 'Prioridad', 'tasks.colStatus': 'Estado', 'tasks.colActions': 'Acciones',
+    'priority.low': 'Baja', 'priority.medium': 'Media', 'priority.high': 'Alta',
+    'status.pending': 'Pendiente', 'status.inProgress': 'En progreso', 'status.completed': 'Completado', 'status.overdue': 'Vencido',
+    'briefings.sub': 'Resúmenes automáticos de mañana y tarde',
+    'briefings.generateNow': 'Generar ahora', 'briefings.empty': 'Sin briefings',
+    'briefings.emptySub': 'Los briefings se generan automáticamente a las horas programadas',
+    'briefings.actionBtn': 'Briefing de acción', 'briefings.completionBtn': 'Briefing de finalización',
+    'briefings.back': 'Volver a briefings',
+    'briefings.morning': '🌅 Briefing matutino', 'briefings.evening': '🌆 Briefing vespertino', 'briefings.manual': '⚡ Briefing instantáneo',
+    'briefings.remaining': 'Tareas pendientes', 'briefings.completed': 'Tareas completadas',
+    'briefings.totalInScope': 'Tareas', 'briefings.noTasks': 'No hay tareas en esta lista',
+    'briefings.noMeta': 'Sin detalles adicionales',
+    'reports.sub': 'Informes de productividad semanales, mensuales y anuales',
+    'reports.generate': 'Generar informe', 'reports.weekly': 'Informe semanal',
+    'reports.monthly': 'Informe mensual', 'reports.annual': 'Informe anual',
+    'reports.empty': 'Sin informes', 'reports.emptySub': 'Haz clic arriba para generar tu primer informe',
+    'reports.created': 'Creadas', 'reports.completed': 'Completadas', 'reports.deleted': 'Eliminadas',
+    'reports.rate': 'Tasa de completado', 'reports.highPri': 'Alta prioridad', 'reports.overdue': 'Vencidas',
+    'reports.download': 'Descargar PDF', 'reports.print': 'Imprimir PDF',
+    'wizard.sub': 'Configura tus horas de briefing de mañana y tarde',
+    'wizard.morning': 'Briefing matutino', 'wizard.evening': 'Briefing vespertino',
+    'wizard.save': 'Guardar horario', 'wizard.saved': '¡Horario guardado!',
+    'settings.sub': 'Preferencias de apariencia e idioma', 'settings.appearance': 'Apariencia',
+    'settings.darkMode': 'Modo oscuro', 'settings.darkModeDesc': 'Cambiar entre temas oscuro y claro',
+    'settings.language': 'Idioma', 'settings.toggleTheme': 'Cambiar tema',
+    'activity.added': 'añadido', 'activity.deleted': 'eliminado',
+    'name.title': 'Bienvenido', 'name.sub': 'Indica tu nombre para personalizar el panel.',
+    'name.placeholder': 'Tu nombre', 'name.save': 'Guardar',
+    'greet.morning': 'Buenos días', 'greet.noon': 'Buen mediodía',
+    'greet.afternoon': 'Buenas tardes', 'greet.night': 'Buenas noches',
+  },
+  zh: {
+    appName: 'TaskIgnite',
+    'nav.dashboard': '仪表板', 'nav.tasks': '任务', 'nav.briefings': '简报',
+    'nav.reports': '报告', 'nav.wizard': '向导', 'nav.settings': '设置',
+    'dashboard.sub': '实时查看任务和年度进度',
+    'dashboard.yearProgress': '年度进度', 'dashboard.yearCalendar': '年度日历',
+    'dashboard.recentActivity': '近期活动', 'dashboard.noActivity': '暂无活动，添加任务开始使用。',
+    'dashboard.incompleteTasks': '未完成任务', 'dashboard.completedTasks': '已完成任务',
+    'dashboard.noTasks': '暂无任务', 'dashboard.noCompleted': '暂无已完成任务',
+    'dashboard.markComplete': '标记为完成', 'dashboard.markIncomplete': '标记为未完成',
+    'dashboard.workload': '工作趋势', 'dashboard.moreWork': '更多工作', 'dashboard.lessWork': '更少工作',
+    'metric.total': '总任务', 'metric.completed': '已完成', 'metric.inProgress': '进行中',
+    'metric.overdue': '已逾期', 'metric.allTasks': '全部', 'metric.finished': '完成',
+    'metric.active': '进行中', 'metric.pastDue': '已超过截止日期',
+    'cal.past': '已过', 'cal.today': '今天', 'cal.upcoming': '即将',
+    'tasks.sub': '添加、管理和跟踪所有任务', 'tasks.addTask': '添加新任务',
+    'tasks.title': '标题', 'tasks.titlePh': '任务标题…', 'tasks.assignee': '负责人',
+    'tasks.assigneePh': '姓名…', 'tasks.dueDate': '截止日期', 'tasks.priority': '优先级',
+    'tasks.status': '状态', 'tasks.add': '添加', 'tasks.allTasks': '所有任务',
+    'tasks.empty': '暂无任务', 'tasks.emptySub': '使用上方表单添加第一个任务',
+    'tasks.colTitle': '标题', 'tasks.colAssignee': '负责人', 'tasks.colDue': '截止日期',
+    'tasks.colPriority': '优先级', 'tasks.colStatus': '状态', 'tasks.colActions': '操作',
+    'priority.low': '低', 'priority.medium': '中', 'priority.high': '高',
+    'status.pending': '待处理', 'status.inProgress': '进行中', 'status.completed': '已完成', 'status.overdue': '已逾期',
+    'briefings.sub': '自动生成的晨间和夜间摘要',
+    'briefings.generateNow': '立即生成', 'briefings.empty': '暂无简报',
+    'briefings.emptySub': '简报将在预定时间自动生成，或点击立即生成',
+    'briefings.actionBtn': '执行简报', 'briefings.completionBtn': '完成简报',
+    'briefings.back': '返回简报',
+    'briefings.morning': '🌅 晨间简报', 'briefings.evening': '🌆 夜间简报', 'briefings.manual': '⚡ 即时简报',
+    'briefings.remaining': '未完成任务', 'briefings.completed': '已完成任务',
+    'briefings.totalInScope': '任务', 'briefings.noTasks': '此列表暂无任务',
+    'briefings.noMeta': '无额外信息',
+    'reports.sub': '每周、每月和年度生产力报告',
+    'reports.generate': '生成报告', 'reports.weekly': '周报',
+    'reports.monthly': '月报', 'reports.annual': '年报',
+    'reports.empty': '暂无报告', 'reports.emptySub': '点击上方按钮生成第一份报告',
+    'reports.created': '已创建', 'reports.completed': '已完成', 'reports.deleted': '已删除',
+    'reports.rate': '完成率', 'reports.highPri': '高优先级', 'reports.overdue': '已逾期',
+    'reports.download': '下载 PDF', 'reports.print': '打印 PDF',
+    'wizard.sub': '配置晨间和夜间简报时间',
+    'wizard.morning': '晨间简报', 'wizard.evening': '夜间简报',
+    'wizard.save': '保存计划', 'wizard.saved': '计划已保存！',
+    'settings.sub': '外观和语言偏好', 'settings.appearance': '外观',
+    'settings.darkMode': '深色模式', 'settings.darkModeDesc': '在深色和浅色主题间切换',
+    'settings.language': '语言', 'settings.toggleTheme': '切换主题',
+    'activity.added': '已添加', 'activity.deleted': '已删除',
+    'name.title': '欢迎', 'name.sub': '输入您的姓名以个性化仪表板。',
+    'name.placeholder': '你的名字', 'name.save': '保存',
+    'greet.morning': '早上好', 'greet.noon': '中午好',
+    'greet.afternoon': '下午好', 'greet.night': '晚安',
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+const S = {
+  tasks:       JSON.parse(localStorage.getItem('tms-tasks')       || '[]'),
+  activityLog: JSON.parse(localStorage.getItem('tms-activity')    || '[]'),
+  briefings:   JSON.parse(localStorage.getItem('tms-briefings')   || '[]'),
+  reports:     JSON.parse(localStorage.getItem('tms-reports')     || '[]'),
+  schedule:    JSON.parse(localStorage.getItem('tms-schedule')    || '{"morningHour":7,"eveningHour":18}'),
+  theme:       localStorage.getItem('tms-theme')                  || 'dark',
+  lang:        localStorage.getItem('tms-lang')                   || 'en',
+  lastBriefingKey: localStorage.getItem('tms-last-briefing-key')  || '',
+  userName:    localStorage.getItem('tms-user-name')              || ''
+};
+
+function save(key, val) { localStorage.setItem('tms-' + key, JSON.stringify(val)); }
+function saveStr(key, val) { localStorage.setItem('tms-' + key, val); }
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════════ */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function t(key) {
+  const map = I18N[S.lang] || I18N.en;
+  return map[key] || I18N.en[key] || key;
+}
+
+function fmtDate(d) {
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function fmtTime(ts) {
+  return new Date(ts).toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit', hour12: true });
+}
+
+function timeGreetingLabel(hour) {
+  if (hour < 12) return t('greet.morning');
+  if (hour < 15) return t('greet.noon');
+  if (hour < 18) return t('greet.afternoon');
+  return t('greet.night');
+}
+
+function updateGreeting() {
+  const el = document.getElementById('greeting-line');
+  if (!el) return;
+  if (!S.userName) { el.textContent = ''; return; }
+  const now = new Date();
+  const label = timeGreetingLabel(now.getHours());
+  el.textContent = `${label}, ${S.userName}`;
+}
+
+function isLeapYear(y) { return (y%4===0 && y%100!==0) || y%400===0; }
+
+function yearDays(y) { return isLeapYear(y) ? 366 : 365; }
+
+function dayOfYear(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  return Math.floor((date - start) / 86400000);
+}
+
+function isOverdue(task) {
+  if (task.status === 'Completed') return false;
+  if (!task.dueDate) return false;
+  return new Date(task.dueDate + 'T23:59:59') < new Date();
+}
+
+function weekStart(d) {
+  const day = new Date(d);
+  const diff = day.getDay() === 0 ? -6 : 1 - day.getDay();
+  day.setDate(day.getDate() + diff);
+  day.setHours(0,0,0,0);
+  return day;
+}
+
+function hour12(h) {
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const hh = h % 12 || 12;
+  return `${hh}:00 ${ampm}`;
+}
+
+function hour24str(h) { return String(h).padStart(2,'0') + ':00'; }
+
+/* ═══════════════════════════════════════════════════════════════
+   I18N APPLY
+═══════════════════════════════════════════════════════════════ */
+function applyI18n() {
+  const map = I18N[S.lang] || I18N.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (map[key]) el.textContent = map[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (map[key]) el.placeholder = map[key];
+  });
+  // RTL
+  document.documentElement.dir = S.lang === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.lang = S.lang;
+  // Update select options
+  const priSel = document.getElementById('f-priority');
+  if (priSel) {
+    priSel.options[0].text = t('priority.low');
+    priSel.options[1].text = t('priority.medium');
+    priSel.options[2].text = t('priority.high');
+  }
+  const stSel = document.getElementById('f-status');
+  if (stSel) {
+    stSel.options[0].text = t('status.pending');
+    stSel.options[1].text = t('status.inProgress');
+    stSel.options[2].text = t('status.completed');
+  }
+
+  updateGreeting();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   THEME
+═══════════════════════════════════════════════════════════════ */
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', S.theme);
+  const tog = document.getElementById('dark-mode-toggle');
+  if (tog) tog.checked = S.theme === 'dark';
+}
+
+function toggleTheme() {
+  S.theme = S.theme === 'dark' ? 'light' : 'dark';
+  saveStr('theme', S.theme);
+  applyTheme();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════════════════════════ */
+function switchTab(name) {
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+  if (name === 'briefings') showBriefingList();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CLOCK
+═══════════════════════════════════════════════════════════════ */
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock-display').textContent = now.toLocaleTimeString(undefined, {
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+  });
+
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+  document.getElementById('clock-date').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  const doy = dayOfYear(now);
+  const total = yearDays(now.getFullYear());
+  document.getElementById('clock-day').textContent = `Day ${doy} of ${total}`;
+
+  // Check briefing schedule
+  const h = now.getHours();
+  const key = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${h}`;
+  if (key !== S.lastBriefingKey) {
+    if (h === S.schedule.morningHour) {
+      generateBriefing('morning');
+      S.lastBriefingKey = key;
+      saveStr('last-briefing-key', key);
+    } else if (h === S.schedule.eveningHour) {
+      generateBriefing('evening');
+      S.lastBriefingKey = key;
+      saveStr('last-briefing-key', key);
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   YEAR PROGRESS
+═══════════════════════════════════════════════════════════════ */
+function updateYearProgress() {
+  const now = new Date();
+  const doy = dayOfYear(now);
+  const total = yearDays(now.getFullYear());
+  const pct = ((doy - 1) / total * 100).toFixed(1);
+
+  document.getElementById('year-pct').textContent = pct + '%';
+  const fill = document.getElementById('year-progress-bar-fill');
+  fill.style.width = pct + '%';
+
+  // Colour: green < 40%, amber 40-70%, red > 70%
+  const p = parseFloat(pct);
+  fill.style.background = p < 40
+    ? 'linear-gradient(90deg, var(--green), var(--accent))'
+    : p < 70
+    ? 'linear-gradient(90deg, var(--amber), var(--accent))'
+    : 'linear-gradient(90deg, var(--red), var(--amber))';
+
+  document.getElementById('year-day-label').textContent = `Day ${doy} of ${total}`;
+  document.getElementById('year-remain-label').textContent = `${total - doy + 1} days remaining`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DOT CALENDAR
+═══════════════════════════════════════════════════════════════ */
+function renderDotCalendar() {
+  const now = new Date();
+  const total = yearDays(now.getFullYear());
+  const todayDoy = dayOfYear(now);
+  const container = document.getElementById('dot-calendar');
+  container.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  for (let i = 1; i <= total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot ' + (i < todayDoy ? 'past' : i === todayDoy ? 'today' : 'future');
+    dot.title = `Day ${i}`;
+    frag.appendChild(dot);
+  }
+  container.appendChild(frag);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WORKLOAD CHART
+═══════════════════════════════════════════════════════════════ */
+function buildWorkloadSeries() {
+  const days = 14;
+  const labels = [];
+  const counts = [];
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0,10);
+    labels.push(d.toLocaleDateString(undefined, { month: 'short', day: '2-digit' }));
+    const count = S.activityLog.filter(a => a.action === 'added' && new Date(a.timestamp).toISOString().slice(0,10) === key).length;
+    counts.push(count);
+  }
+  return { labels, counts };
+}
+
+function renderWorkloadChart() {
+  const canvas = document.getElementById('workload-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const { labels, counts } = buildWorkloadSeries();
+  const width = canvas.width;
+  const height = canvas.height;
+  const padding = 24;
+  ctx.clearRect(0, 0, width, height);
+
+  const maxVal = Math.max(2, ...counts);
+  const stepX = (width - padding * 2) / (counts.length - 1 || 1);
+  const scaleY = (height - padding * 2) / maxVal;
+
+  // Grid
+  ctx.strokeStyle = 'rgba(47,185,167,0.12)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding + ((height - padding * 2) / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(width - padding, y);
+    ctx.stroke();
+  }
+
+  // Line
+  ctx.strokeStyle = '#2FB9A7';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  counts.forEach((val, i) => {
+    const x = padding + stepX * i;
+    const y = height - padding - val * scaleY;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Points
+  counts.forEach((val, i) => {
+    const x = padding + stepX * i;
+    const y = height - padding - val * scaleY;
+    ctx.fillStyle = val === 0 ? '#6F908B' : '#2FB9A7';
+    ctx.beginPath();
+    ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Labels
+  ctx.fillStyle = '#6F908B';
+  ctx.font = '11px Work Sans';
+  labels.forEach((label, i) => {
+    const x = padding + stepX * i;
+    ctx.fillText(label, x - 12, height - 6);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   METRICS
+═══════════════════════════════════════════════════════════════ */
+function updateMetrics() {
+  const tasks = S.tasks;
+  document.getElementById('m-total').textContent = tasks.length;
+  document.getElementById('m-done').textContent  = tasks.filter(t => t.status === 'Completed').length;
+  document.getElementById('m-prog').textContent  = tasks.filter(t => t.status === 'In Progress').length;
+  document.getElementById('m-over').textContent  = tasks.filter(isOverdue).length;
+  document.getElementById('task-count-badge').textContent = tasks.length + ' tasks';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD TASK CHECKLISTS
+═══════════════════════════════════════════════════════════════ */
+function renderDashboardTasks() {
+  const incompleteList = document.getElementById('dash-incomplete-list');
+  const completeList = document.getElementById('dash-complete-list');
+  if (!incompleteList || !completeList) return;
+
+  const tasks = [...S.tasks];
+  const incomplete = tasks.filter(t => t.status !== 'Completed');
+  const complete = tasks.filter(t => t.status === 'Completed');
+
+  if (incomplete.length === 0) {
+    incompleteList.innerHTML = `<div class="dash-empty" data-i18n="dashboard.noTasks">${t('dashboard.noTasks')}</div>`;
+  } else {
+    incompleteList.innerHTML = incomplete.map(task => {
+      const priMap = { Low: t('priority.low'), Medium: t('priority.medium'), High: t('priority.high') };
+      const meta = [
+        task.assignee ? task.assignee : null,
+        task.dueDate ? fmtDate(task.dueDate) : null,
+        task.priority ? priMap[task.priority] : null
+      ].filter(Boolean).join(' · ');
+      return `
+        <div class="dash-task-row" data-task-id="${task.id}">
+          <label class="dash-check" title="${t('dashboard.markComplete')}">
+            <input type="checkbox" data-task-id="${task.id}" ${task.status === 'Completed' ? 'checked' : ''} />
+            <span class="dash-check-box"></span>
+          </label>
+          <div class="dash-task-main">
+            <div class="dash-task-title">${task.title}</div>
+            <div class="dash-task-meta">
+              ${meta ? `<span>${meta}</span>` : ''}
+              ${task.priority ? priorityBadge(task.priority) : ''}
+            </div>
+          </div>
+          <button class="dash-task-del" onclick="deleteTask('${task.id}')" title="${t('tasks.colActions')}">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="2,3 10,3"/><path d="M4,3V2h4v1"/><path d="M4,3v7a1,1,0,0,0,1,1h2a1,1,0,0,0,1-1V3"/>
+            </svg>
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  if (complete.length === 0) {
+    completeList.innerHTML = `<div class="dash-empty" data-i18n="dashboard.noCompleted">${t('dashboard.noCompleted')}</div>`;
+  } else {
+    completeList.innerHTML = complete.map(task => {
+      const meta = [
+        task.assignee ? task.assignee : null,
+        task.dueDate ? fmtDate(task.dueDate) : null
+      ].filter(Boolean).join(' · ');
+      return `
+        <div class="dash-task-row is-complete" data-task-id="${task.id}">
+          <label class="dash-check" title="${t('dashboard.markIncomplete')}">
+            <input type="checkbox" data-task-id="${task.id}" checked />
+            <span class="dash-check-box"></span>
+          </label>
+          <div class="dash-task-main">
+            <div class="dash-task-title">${task.title}</div>
+            <div class="dash-task-meta">
+              ${meta ? `<span>${meta}</span>` : ''}
+              ${statusBadge(task)}
+            </div>
+          </div>
+          <button class="dash-task-del" onclick="deleteTask('${task.id}')" title="${t('tasks.colActions')}">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="2,3 10,3"/><path d="M4,3V2h4v1"/><path d="M4,3v7a1,1,0,0,0,1,1h2a1,1,0,0,0,1-1V3"/>
+            </svg>
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function toggleTaskCompletion(taskId, isCompleted) {
+  const task = S.tasks.find(t => t.id === taskId);
+  if (!task) return;
+  task.status = isCompleted ? 'Completed' : 'Pending';
+  save('tasks', S.tasks);
+  renderTaskTable();
+  renderDashboardTasks();
+  updateMetrics();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIVITY FEED
+═══════════════════════════════════════════════════════════════ */
+function renderActivityFeed() {
+  const feed = document.getElementById('activity-feed');
+  if (S.activityLog.length === 0) {
+    feed.innerHTML = `<div class="feed-empty" data-i18n="dashboard.noActivity">${t('dashboard.noActivity')}</div>`;
+    return;
+  }
+  const recent = [...S.activityLog].reverse().slice(0, 12);
+  feed.innerHTML = recent.map(e => `
+    <div class="activity-item">
+      <div class="activity-dot ${e.action}"></div>
+      <div class="activity-text">
+        <strong>${e.taskTitle}</strong> — ${e.action === 'added' ? t('activity.added') : t('activity.deleted')}
+        ${e.assignee ? `· ${e.assignee}` : ''}
+      </div>
+      <div class="activity-time">${fmtTime(e.timestamp)}</div>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TASK TABLE
+═══════════════════════════════════════════════════════════════ */
+function statusBadge(task) {
+  const ov = isOverdue(task);
+  const cls = ov ? 'overdue' : task.status === 'Completed' ? 'completed' : task.status === 'In Progress' ? 'progress' : 'pending';
+  const lbl = ov ? t('status.overdue') : task.status === 'Completed' ? t('status.completed') : task.status === 'In Progress' ? t('status.inProgress') : t('status.pending');
+  return `<span class="badge badge-${cls}">${lbl}</span>`;
+}
+
+function priorityBadge(p) {
+  const cls = p === 'High' ? 'high' : p === 'Medium' ? 'medium' : 'low';
+  const lbl = p === 'High' ? t('priority.high') : p === 'Medium' ? t('priority.medium') : t('priority.low');
+  return `<span class="badge badge-${cls}">${lbl}</span>`;
+}
+
+function renderTaskTable() {
+  const wrap = document.getElementById('task-table-wrap');
+  if (S.tasks.length === 0) {
+    wrap.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <div class="empty-state-title">${t('tasks.empty')}</div>
+        <div class="empty-state-sub">${t('tasks.emptySub')}</div>
+      </div>`;
+    return;
+  }
+  wrap.innerHTML = `
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th>${t('tasks.colTitle')}</th>
+          <th>${t('tasks.colAssignee')}</th>
+          <th>${t('tasks.colDue')}</th>
+          <th>${t('tasks.colPriority')}</th>
+          <th>${t('tasks.colStatus')}</th>
+          <th>${t('tasks.colActions')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${S.tasks.map(task => `
+          <tr>
+            <td><span class="task-name" title="${task.title}">${task.title}</span></td>
+            <td>${task.assignee || '—'}</td>
+            <td>${task.dueDate ? fmtDate(task.dueDate) : '—'}</td>
+            <td>${priorityBadge(task.priority)}</td>
+            <td>${statusBadge(task)}</td>
+            <td>
+              <button class="btn btn-danger" onclick="deleteTask('${task.id}')">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="2,3 10,3"/><path d="M4,3V2h4v1"/><path d="M4,3v7a1,1,0,0,0,1,1h2a1,1,0,0,0,1-1V3"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADD / DELETE TASK
+═══════════════════════════════════════════════════════════════ */
+function addTask() {
+  const title    = document.getElementById('f-title').value.trim();
+  const assignee = document.getElementById('f-assignee').value.trim();
+  const dueDate  = document.getElementById('f-due').value;
+  const priority = document.getElementById('f-priority').value;
+  const status   = document.getElementById('f-status').value;
+  if (!title) { document.getElementById('f-title').focus(); return; }
+
+  const task = { id: uid(), title, assignee, dueDate, priority, status, createdAt: Date.now() };
+  S.tasks.push(task);
+  save('tasks', S.tasks);
+
+  const entry = { id: uid(), action: 'added', taskTitle: title, assignee, timestamp: Date.now() };
+  S.activityLog.push(entry);
+  save('activity', S.activityLog);
+
+  // Clear form
+  ['f-title','f-assignee','f-due'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-priority').value = 'Medium';
+  document.getElementById('f-status').value = 'Pending';
+
+  renderTaskTable();
+  updateMetrics();
+  renderWorkloadChart();
+  renderDashboardTasks();
+  renderActivityFeed();
+}
+
+function deleteTask(id) {
+  const task = S.tasks.find(t => t.id === id);
+  if (!task) return;
+  S.tasks = S.tasks.filter(t => t.id !== id);
+  save('tasks', S.tasks);
+
+  const entry = { id: uid(), action: 'deleted', taskTitle: task.title, assignee: task.assignee, timestamp: Date.now() };
+  S.activityLog.push(entry);
+  save('activity', S.activityLog);
+
+  renderTaskTable();
+  updateMetrics();
+  renderWorkloadChart();
+  renderDashboardTasks();
+  renderActivityFeed();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BRIEFINGS
+═══════════════════════════════════════════════════════════════ */
+function generateBriefing(type) {
+  const now = new Date();
+  const doy = dayOfYear(now);
+  const total = yearDays(now.getFullYear());
+  const pct = ((doy - 1) / total * 100).toFixed(1);
+
+  const remainingTasks = S.tasks.filter(t => t.status !== 'Completed');
+  const completedTasks = S.tasks.filter(t => t.status === 'Completed');
+
+  const baseBriefing = {
+    type: type || 'manual',
+    generatedAt: Date.now(),
+    yearProgress: pct,
+    totalTasks: S.tasks.length,
+    highPriority: S.tasks.filter(t => t.priority === 'High').length,
+    overdue: S.tasks.filter(isOverdue).length
+  };
+
+  const remainingBriefing = {
+    ...baseBriefing,
+    id: uid(),
+    scope: 'remaining',
+    tasks: remainingTasks
+  };
+
+  const completedBriefing = {
+    ...baseBriefing,
+    id: uid(),
+    scope: 'completed',
+    tasks: completedTasks
+  };
+
+  S.briefings.unshift(completedBriefing);
+  S.briefings.unshift(remainingBriefing);
+  save('briefings', S.briefings);
+  renderBriefings();
+
+  // Native notification
+  if (window.electronAPI) {
+    const typeLabel = type === 'morning' ? '🌅 Morning' : type === 'evening' ? '🌆 Evening' : '⚡ Briefing';
+    window.electronAPI.showNotification({
+      title: `${typeLabel} Briefings Ready`,
+      body: `${remainingTasks.length} remaining · ${completedTasks.length} completed · Year ${pct}%`
+    });
+  }
+}
+
+function generateBriefingScope(scope, type = 'manual') {
+  const now = new Date();
+  const doy = dayOfYear(now);
+  const total = yearDays(now.getFullYear());
+  const pct = ((doy - 1) / total * 100).toFixed(1);
+
+  const tasks = scope === 'completed'
+    ? S.tasks.filter(t => t.status === 'Completed')
+    : S.tasks.filter(t => t.status !== 'Completed');
+
+  const briefing = {
+    id: uid(),
+    type,
+    scope,
+    generatedAt: Date.now(),
+    yearProgress: pct,
+    totalTasks: S.tasks.length,
+    highPriority: S.tasks.filter(t => t.priority === 'High').length,
+    overdue: S.tasks.filter(isOverdue).length,
+    tasks
+  };
+
+  S.briefings.unshift(briefing);
+  save('briefings', S.briefings);
+  renderBriefings();
+  showBriefingDetail(briefing);
+
+  if (window.electronAPI) {
+    const typeLabel = type === 'morning' ? '🌅 Morning' : type === 'evening' ? '🌆 Evening' : '⚡ Briefing';
+    const scopeLabel = scope === 'completed' ? 'Completion' : 'Action';
+    window.electronAPI.showNotification({
+      title: `${typeLabel} ${scopeLabel} Briefing Ready`,
+      body: `${tasks.length} tasks · Year ${pct}% complete`
+    });
+  }
+}
+
+function showBriefingDetail(briefing) {
+  const listView = document.getElementById('briefings-list-view');
+  const detailView = document.getElementById('briefing-detail-view');
+  const card = document.getElementById('briefing-detail-card');
+  if (!listView || !detailView || !card) return;
+
+  listView.style.display = 'none';
+  detailView.classList.add('active');
+
+  const typeLabel = briefing.type === 'morning' ? t('briefings.morning') :
+                    briefing.type === 'evening' ? t('briefings.evening') : t('briefings.manual');
+  const scopeLabel = briefing.scope === 'completed' ? t('briefings.completed') : t('briefings.remaining');
+  const scopeClass = briefing.scope === 'completed' ? 'completed' : 'remaining';
+  const dt = new Date(briefing.generatedAt);
+  const timeStr = dt.toLocaleDateString(undefined, {day:'2-digit',month:'short',year:'numeric'}) +
+                  ' · ' + dt.toLocaleTimeString(undefined, {hour:'2-digit',minute:'2-digit',hour12:true});
+  const tasksList = Array.isArray(briefing.tasks) ? briefing.tasks : [];
+  const priMap = { Low: t('priority.low'), Medium: t('priority.medium'), High: t('priority.high') };
+  const tasksHtml = tasksList.length
+    ? tasksList.map(task => {
+        const meta = [
+          task.assignee ? task.assignee : null,
+          task.dueDate ? fmtDate(task.dueDate) : null,
+          task.priority ? priMap[task.priority] : null
+        ].filter(Boolean).join(' · ');
+        return `
+          <div class="briefing-task">
+            <div class="briefing-task-title">${task.title}</div>
+            <div class="briefing-task-meta">${meta || t('briefings.noMeta')}</div>
+          </div>
+        `;
+      }).join('')
+    : `<div class="briefing-empty">${t('briefings.noTasks')}</div>`;
+
+  card.innerHTML = `
+    <div class="briefing-item">
+      <div class="briefing-header">
+        <div class="briefing-type">
+          ${typeLabel}
+          <span class="briefing-scope ${scopeClass}">${scopeLabel}</span>
+        </div>
+        <div class="briefing-time">${timeStr}</div>
+      </div>
+      <div class="briefing-body">
+        <div class="briefing-stat-row">
+          <div class="briefing-stat">📅 Year <strong>${briefing.yearProgress}%</strong></div>
+          <div class="briefing-stat">📋 Total <strong>${briefing.totalTasks}</strong></div>
+          <div class="briefing-stat">🔥 High <strong>${briefing.highPriority}</strong></div>
+          <div class="briefing-stat">⚠️ Overdue <strong>${briefing.overdue}</strong></div>
+          <div class="briefing-stat">✅ ${t('briefings.totalInScope')} <strong>${tasksList.length}</strong></div>
+        </div>
+        <div class="briefing-task-list">${tasksHtml}</div>
+      </div>
+    </div>
+  `;
+}
+
+function showBriefingList() {
+  const listView = document.getElementById('briefings-list-view');
+  const detailView = document.getElementById('briefing-detail-view');
+  if (!listView || !detailView) return;
+  listView.style.display = 'block';
+  detailView.classList.remove('active');
+}
+
+function renderBriefings() {
+  const list = document.getElementById('briefings-list');
+  if (S.briefings.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">🌅</div>
+        <div class="empty-state-title">${t('briefings.empty')}</div>
+        <div class="empty-state-sub">${t('briefings.emptySub')}</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = S.briefings.map(b => {
+    const typeLabel = b.type === 'morning' ? t('briefings.morning') :
+                      b.type === 'evening' ? t('briefings.evening') : t('briefings.manual');
+    const scopeLabel = b.scope === 'completed' ? t('briefings.completed') : t('briefings.remaining');
+    const scopeClass = b.scope === 'completed' ? 'completed' : 'remaining';
+    const dt = new Date(b.generatedAt);
+    const timeStr = dt.toLocaleDateString(undefined, {day:'2-digit',month:'short',year:'numeric'}) +
+                    ' · ' + dt.toLocaleTimeString(undefined, {hour:'2-digit',minute:'2-digit',hour12:true});
+
+    const tasksList = Array.isArray(b.tasks) ? b.tasks : [];
+    const tasksHtml = tasksList.length
+      ? tasksList.map(task => {
+          const priMap = { Low: t('priority.low'), Medium: t('priority.medium'), High: t('priority.high') };
+          const meta = [
+            task.assignee ? task.assignee : null,
+            task.dueDate ? fmtDate(task.dueDate) : null,
+            task.priority ? priMap[task.priority] : null
+          ].filter(Boolean).join(' · ');
+          return `
+            <div class="briefing-task">
+              <div class="briefing-task-title">${task.title}</div>
+              <div class="briefing-task-meta">${meta || t('briefings.noMeta')}</div>
+            </div>
+          `;
+        }).join('')
+      : `<div class="briefing-empty">${t('briefings.noTasks')}</div>`;
+
+    return `
+      <div class="briefing-item">
+        <div class="briefing-header">
+          <div class="briefing-type">
+            ${typeLabel}
+            <span class="briefing-scope ${scopeClass}">${scopeLabel}</span>
+          </div>
+          <div class="briefing-time">${timeStr}</div>
+        </div>
+        <div class="briefing-body">
+          <div class="briefing-stat-row">
+            <div class="briefing-stat">📅 Year <strong>${b.yearProgress}%</strong></div>
+            <div class="briefing-stat">📋 Total <strong>${b.totalTasks}</strong></div>
+            <div class="briefing-stat">🔥 High <strong>${b.highPriority}</strong></div>
+            <div class="briefing-stat">⚠️ Overdue <strong>${b.overdue}</strong></div>
+            <div class="briefing-stat">✅ ${t('briefings.totalInScope')} <strong>${tasksList.length}</strong></div>
+          </div>
+          <div class="briefing-task-list">${tasksHtml}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REPORTS
+═══════════════════════════════════════════════════════════════ */
+function generateReport(type) {
+  const now = new Date();
+  let startDate, endDate, period;
+
+  if (type === 'weekly') {
+    startDate = weekStart(now);
+    endDate = new Date(startDate); endDate.setDate(endDate.getDate() + 6);
+    period = `Week of ${startDate.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'})}`;
+  } else if (type === 'monthly') {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    period = now.toLocaleDateString('en-GB', {month:'long', year:'numeric'});
+  } else {
+    startDate = new Date(now.getFullYear(), 0, 1);
+    endDate = new Date(now.getFullYear(), 11, 31);
+    period = String(now.getFullYear());
+  }
+
+  const s = startDate.getTime(), e = endDate.getTime() + 86399999;
+  const periodActivity = S.activityLog.filter(a => a.timestamp >= s && a.timestamp <= e);
+  const addedIds = periodActivity.filter(a => a.action === 'added').map(a => a.taskTitle);
+  const deletedCount = periodActivity.filter(a => a.action === 'deleted').length;
+
+  const periodTasks = S.tasks.filter(t => {
+    const c = t.createdAt; return c >= s && c <= e;
+  });
+
+  const completed = periodTasks.filter(t => t.status === 'Completed').length;
+  const created   = addedIds.length;
+  const rate      = created > 0 ? Math.round(completed / created * 100) : 0;
+  const highPri   = S.tasks.filter(t => t.priority === 'High' && t.createdAt >= s && t.createdAt <= e).length;
+  const overdue   = S.tasks.filter(t => isOverdue(t) && t.createdAt >= s && t.createdAt <= e).length;
+
+  let summary = '';
+  if (type === 'annual') {
+    summary = `In ${period}, ${created} tasks were created with a ${rate}% completion rate. ` +
+              `${highPri} high-priority items were tracked. ` +
+              (overdue > 0 ? `${overdue} tasks remain overdue and need attention.` : `All tasks are on track.`);
+  }
+
+  const report = { id: uid(), type, period, generatedAt: Date.now(), created, completed, deleted: deletedCount, completionRate: rate, highPriority: highPri, overdue, summary };
+  S.reports.unshift(report);
+  save('reports', S.reports);
+  renderReports();
+}
+
+function buildReportHtml(report) {
+  const dt = new Date(report.generatedAt);
+  const timeStr = dt.toLocaleDateString(undefined, {day:'2-digit',month:'short',year:'numeric'}) +
+                  ' · ' + dt.toLocaleTimeString(undefined, {hour:'2-digit',minute:'2-digit',hour12:true});
+  return `
+    <div class="report-item" style="border:none;box-shadow:none;">
+      <div class="report-header">
+        <div class="report-period">${report.period}</div>
+        <span class="report-type-badge">${report.type}</span>
+      </div>
+      <div class="report-meta" style="padding:8px 16px;color:var(--text-3);font-size:11px;">
+        ${timeStr}
+      </div>
+      <div class="report-stats-grid">
+        <div class="report-stat"><div class="report-stat-value">${report.created}</div><div class="report-stat-label">${t('reports.created')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${report.completed}</div><div class="report-stat-label">${t('reports.completed')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${report.deleted}</div><div class="report-stat-label">${t('reports.deleted')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${report.completionRate}%</div><div class="report-stat-label">${t('reports.rate')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${report.highPriority}</div><div class="report-stat-label">${t('reports.highPri')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${report.overdue}</div><div class="report-stat-label">${t('reports.overdue')}</div></div>
+      </div>
+      ${report.summary ? `<div class="report-summary">${report.summary}</div>` : ''}
+    </div>
+  `;
+}
+
+function buildReportDocument(report) {
+  return `
+    <html>
+      <head>
+        <meta charset="UTF-8" />
+        <title>${report.period} — ${report.type}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+        <style>
+          body { font-family: 'Work Sans', sans-serif; color: #1F2A2A; margin: 24px; }
+          .report-item { border: 1px solid #E5DDD1; border-radius: 12px; overflow: hidden; }
+          .report-header { display: flex; justify-content: space-between; padding: 12px 16px; background: #FFFDF9; border-bottom: 1px solid #E5DDD1; }
+          .report-period { font-family: 'Sora', sans-serif; font-weight: 700; }
+          .report-type-badge { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; padding: 3px 9px; border-radius: 20px; background: rgba(15,168,156,0.1); color: #0A7B72; border: 1px solid #0FA89C; }
+          .report-meta { padding: 8px 16px; color: #8A9E9B; font-size: 11px; }
+          .report-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid #E5DDD1; }
+          .report-stat { padding: 14px; border-right: 1px solid #E5DDD1; text-align: center; }
+          .report-stat:nth-child(3), .report-stat:nth-child(6) { border-right: none; }
+          .report-stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 700; }
+          .report-stat-label { font-size: 10px; color: #8A9E9B; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+          .report-summary { padding: 14px 16px; font-size: 13px; color: #4F6765; line-height: 1.6; }
+          @media print { body { margin: 0; } }
+        </style>
+      </head>
+      <body>
+        ${buildReportHtml(report)}
+      </body>
+    </html>
+  `;
+}
+
+function openReportPrintWindow(report, mode) {
+  const win = window.open('', '_blank');
+  if (!win) return;
+  const doc = win.document;
+  doc.open();
+  doc.write(buildReportDocument(report));
+  doc.close();
+  if (mode === 'print') {
+    win.focus();
+    win.print();
+  }
+}
+
+function safeFileName(name) {
+  return String(name).replace(/[^a-z0-9-_]+/gi, '_');
+}
+
+function downloadReportPdf(reportId) {
+  const report = S.reports.find(r => r.id === reportId);
+  if (!report) return;
+  if (window.electronAPI && window.electronAPI.saveReportPdf) {
+    const fileName = `Report_${safeFileName(report.period)}.pdf`;
+    window.electronAPI.saveReportPdf({ html: buildReportDocument(report), fileName });
+  } else {
+    openReportPrintWindow(report, 'print');
+  }
+}
+
+function printReportPdf(reportId) {
+  const report = S.reports.find(r => r.id === reportId);
+  if (!report) return;
+  openReportPrintWindow(report, 'print');
+}
+
+function renderReports() {
+  const list = document.getElementById('reports-list');
+  if (S.reports.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📊</div>
+        <div class="empty-state-title">${t('reports.empty')}</div>
+        <div class="empty-state-sub">${t('reports.emptySub')}</div>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = S.reports.map(r => `
+    <div class="report-item">
+      <div class="report-header">
+        <div class="report-period">${r.period}</div>
+        <span class="report-type-badge">${r.type}</span>
+      </div>
+      <div class="report-stats-grid">
+        <div class="report-stat"><div class="report-stat-value">${r.created}</div><div class="report-stat-label">${t('reports.created')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${r.completed}</div><div class="report-stat-label">${t('reports.completed')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${r.deleted}</div><div class="report-stat-label">${t('reports.deleted')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${r.completionRate}%</div><div class="report-stat-label">${t('reports.rate')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${r.highPriority}</div><div class="report-stat-label">${t('reports.highPri')}</div></div>
+        <div class="report-stat"><div class="report-stat-value">${r.overdue}</div><div class="report-stat-label">${t('reports.overdue')}</div></div>
+      </div>
+      ${r.summary ? `<div class="report-summary">${r.summary}</div>` : ''}
+      <div class="report-actions">
+        <button class="btn btn-secondary" onclick="downloadReportPdf('${r.id}')">${t('reports.download')}</button>
+        <button class="btn btn-secondary" onclick="printReportPdf('${r.id}')">${t('reports.print')}</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   WIZARD
+═══════════════════════════════════════════════════════════════ */
+function updateMorningPreview(h) {
+  document.getElementById('morning-preview-12').textContent = hour12(parseInt(h));
+  document.getElementById('morning-preview-24').textContent = hour24str(parseInt(h));
+}
+
+function updateEveningPreview(h) {
+  document.getElementById('evening-preview-12').textContent = hour12(parseInt(h));
+  document.getElementById('evening-preview-24').textContent = hour24str(parseInt(h));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENT WIRING
+═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Tab switching
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // Window controls (Electron)
+  const api = window.electronAPI;
+  document.getElementById('wc-minimize').onclick = () => api ? api.minimizeWindow() : null;
+  document.getElementById('wc-maximize').onclick = () => api ? api.maximizeWindow() : null;
+  document.getElementById('wc-close').onclick    = () => api ? api.closeWindow()    : window.close();
+
+  // Theme
+  document.getElementById('theme-toggle-btn').onclick    = toggleTheme;
+  document.getElementById('dark-mode-toggle').onchange   = toggleTheme;
+
+  // Language
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      S.lang = btn.dataset.lang;
+      saveStr('lang', S.lang);
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === S.lang));
+      applyI18n();
+      renderTaskTable();
+      renderDashboardTasks();
+      renderActivityFeed();
+      renderBriefings();
+      renderReports();
+    });
+  });
+
+  // Add task
+  document.getElementById('add-task-btn').onclick = addTask;
+  document.getElementById('f-title').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+  // Briefing
+  const legacyBriefBtn = document.getElementById('gen-briefing-btn');
+  if (legacyBriefBtn) legacyBriefBtn.onclick = () => generateBriefing('manual');
+  const actionBtn = document.getElementById('gen-briefing-action');
+  const completionBtn = document.getElementById('gen-briefing-completion');
+  if (actionBtn) actionBtn.onclick = () => generateBriefingScope('remaining', 'manual');
+  if (completionBtn) completionBtn.onclick = () => generateBriefingScope('completed', 'manual');
+  const backBtn = document.getElementById('briefing-back-btn');
+  if (backBtn) backBtn.onclick = () => showBriefingList();
+
+  // Reports
+  document.getElementById('rpt-weekly').onclick  = () => generateReport('weekly');
+  document.getElementById('rpt-monthly').onclick = () => generateReport('monthly');
+  document.getElementById('rpt-annual').onclick  = () => generateReport('annual');
+
+  // Wizard sliders
+  const mSlider = document.getElementById('morning-slider');
+  const eSlider = document.getElementById('evening-slider');
+  mSlider.value = S.schedule.morningHour;
+  eSlider.value = S.schedule.eveningHour;
+  updateMorningPreview(mSlider.value);
+  updateEveningPreview(eSlider.value);
+  mSlider.addEventListener('input', () => updateMorningPreview(mSlider.value));
+  eSlider.addEventListener('input', () => updateEveningPreview(eSlider.value));
+
+  document.getElementById('save-schedule-btn').onclick = () => {
+    S.schedule.morningHour = parseInt(mSlider.value);
+    S.schedule.eveningHour = parseInt(eSlider.value);
+    save('schedule', S.schedule);
+    const msg = document.getElementById('wizard-saved');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 2500);
+  };
+
+  // Electron maximize state
+  if (api) {
+    api.onWindowMaximized(isMax => {
+      const btn = document.getElementById('wc-maximize');
+      btn.title = isMax ? 'Restore' : 'Maximize';
+    });
+  }
+
+  // Initial render
+  applyTheme();
+  applyI18n();
+
+  // Set active language button
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === S.lang));
+
+  updateClock();
+  updateYearProgress();
+  renderDotCalendar();
+  renderWorkloadChart();
+  updateMetrics();
+  renderDashboardTasks();
+  renderActivityFeed();
+  renderBriefings();
+  renderReports();
+
+  // Name capture (first run)
+  const nameModal = document.getElementById('name-modal');
+  const nameInput = document.getElementById('name-input');
+  const nameSave = document.getElementById('name-save-btn');
+  const openNameModal = () => {
+    if (!nameModal) return;
+    nameModal.classList.add('active');
+    if (nameInput) nameInput.focus();
+  };
+  const closeNameModal = () => {
+    if (!nameModal) return;
+    nameModal.classList.remove('active');
+  };
+  const saveName = () => {
+    if (!nameInput) return;
+    const val = nameInput.value.trim();
+    if (!val) { nameInput.focus(); return; }
+    S.userName = val;
+    saveStr('user-name', val);
+    updateGreeting();
+    closeNameModal();
+  };
+  if (!S.userName) {
+    openNameModal();
+  } else {
+    updateGreeting();
+  }
+  if (nameSave) nameSave.onclick = saveName;
+  if (nameInput) nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveName(); });
+
+  // Dashboard checkbox toggles
+  document.addEventListener('change', e => {
+    if (!e.target || e.target.type !== 'checkbox') return;
+    const taskId = e.target.dataset.taskId;
+    if (!taskId) return;
+    toggleTaskCompletion(taskId, e.target.checked);
+  });
+
+  // Start clock + auto-checks every second
+  setInterval(() => {
+    updateClock();
+    updateGreeting();
+  }, 1000);
+
+  // Update year progress once per minute
+  setInterval(() => {
+    updateYearProgress();
+  }, 60000);
+});
+</script>
+</body>
+</html>
